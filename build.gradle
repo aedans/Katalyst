@@ -1,0 +1,75 @@
+group 'io.github.aedans'
+version '0.1.0'
+
+buildscript {
+    ext.kotlin_version = '1.1.60'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+apply from: rootProject.file('gradle/generated-kotlin-sources.gradle')
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://kotlin.bintray.com/kotlinx' }
+    maven { url 'https://dl.bintray.com/kategory/maven' }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile 'io.kategory:kategory:0.3.11'
+    kapt    'io.kategory:kategory-annotations-processor:0.3.11'
+    testCompile 'io.kotlintest:kotlintest:2.0.7'
+    testCompile 'io.kategory:kategory-test:0.3.11'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        publishToBintray(MavenPublication) {
+            from components.java
+            Artifact sourcesJar
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['publishToBintray']
+    publish = true
+
+    pkg {
+        repo = 'maven'
+        name = 'katalyst'
+        userOrg = user
+
+        version {
+            name = project.version
+        }
+    }
+}
