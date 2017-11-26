@@ -27,7 +27,6 @@ Features
 - [x] List and Nat defined using recursion schemes
 - [x] Kleisli recursion schemes
 - [ ] Generalized recursion schemes
-- [ ] Functor, Foldable, and Traverse instances
 - [ ] Elgot recursion schemes
 - [ ] Env and CoEnv data types
 - [ ] Free and Cofree defined using recursion schemes

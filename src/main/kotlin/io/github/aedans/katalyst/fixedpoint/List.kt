@@ -9,25 +9,26 @@ import kategory.*
 
 @higherkind
 sealed class ListF<out F, out A> : ListFKind<F, A> {
+    data class Cons<out F, out A>(val head: F, val tail: A) : ListF<F, A>()
+    object Nil : ListF<Nothing, Nothing>()
+
     companion object
-}
-
-data class Cons<out F, out A>(val head: F, val tail: A) : ListF<F, A>()
-object Nil : ListF<Nothing, Nothing>()
-
-val <F, A> ListF<F, A>.either get() = when (this) {
-    is Nil -> this.left()
-    is Cons -> this.right()
 }
 
 @instance(ListF::class)
 interface ListFFunctorInstance<F> : Functor<ListFKindPartial<F>> {
-    override fun <A, B> map(fa: ListFKind<F, A>, f: (A) -> B) = fa.ev().either.fold({ Nil }, { Cons(it.head, f(it.tail)) })
+    override fun <A, B> map(fa: ListFKind<F, A>, f: (A) -> B) =
+            fa.ev().either.fold({ ListF.Nil }, { ListF.Cons(it.head, f(it.tail)) })
+}
+
+val <F, A> ListF<F, A>.either get() = when (this) {
+    is ListF.Nil -> this.left()
+    is ListF.Cons -> this.right()
 }
 
 typealias RList<T, A> = HK<T, ListFKindPartial<A>>
 
-inline fun <reified T, A> List<A>.rList(): RList<T, A> = ana { if (it.isEmpty()) Nil else Cons(it.first(), it.drop(1)) }
+inline fun <reified T, A> List<A>.rList(): RList<T, A> = ana { if (it.isEmpty()) ListF.Nil else ListF.Cons(it.first(), it.drop(1)) }
 
 inline val <reified T, A> RList<T, A>.list get(): List<A> =
     cata { it.ev().either.fold({ emptyList() }, { listOf(it.head) + it.tail }) }
