@@ -37,9 +37,8 @@ Contributing
 
 Katalyst is a long way from being complete, and any help is greatly
 appreciated. If you find a bug, please open an issue. If you just want
-to write some code, there are plenty of unimplemented or incomplete
-features that need to be implemented; just open a Pull Request and
-hack at it. 
+to write some code, there are plenty of features that need to be implemented;
+just open a pull request and hack at it.
 
 Resources
 ---------
