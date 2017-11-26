@@ -8,7 +8,11 @@ import kategory.*
 interface Recursive<T> : Typeclass {
     fun <F> project(t: HK<T, F>, FF: Functor<F>): HK<F, HK<T, F>>
 
-    fun <F, A> cata(t: HK<T, F>, alg: Algebra<F, A>, FF: Functor<F>): A = hylo(t, alg, { project(it, FF) }, FF)
+    fun <F, A> cata(t: HK<T, F>, alg: Algebra<F, A>, FF: Functor<F>): A =
+            hylo(t, alg, { project(it, FF) }, FF)
+
+    fun <M, F, A> cataM(t: HK<T, F>, algM: AlgebraM<M, F, A>, TF: Traverse<F>, MM: Monad<M>): HK<M, A> =
+            cata(t, { MM.flatMap(TF.sequence(MM, it), algM) }, TF)
 }
 
 inline fun <reified F, reified T, A> HK<T, F>.cata(
@@ -22,6 +26,6 @@ inline fun <reified M, reified F, reified T, A> HK<T, F>.cataM(
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
         noinline algM: AlgebraM<M, F, A>
-): HK<M, A> = RT.cata(this, { MM.flatMap(TF.sequence(MM, it), algM) }, TF)
+): HK<M, A> = RT.cataM(this, algM, TF, MM)
 
 inline fun <reified F> recursive(): Recursive<F> = instance(InstanceParametrizedType(Recursive::class.java, listOf(typeLiteral<F>())))
