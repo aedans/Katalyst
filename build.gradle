@@ -1,5 +1,5 @@
 group 'io.github.aedans'
-version '0.1.0'
+version '0.2.0'
 
 buildscript {
     ext.kotlin_version = '1.1.60'
@@ -52,6 +52,7 @@ publishing {
     publications {
         publishToBintray(MavenPublication) {
             from components.java
+            //noinspection GroovyUnusedAssignment
             Artifact sourcesJar
         }
     }

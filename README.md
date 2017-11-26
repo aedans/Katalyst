@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.github.aedans:katalyst:0.1.0'
+    compile 'io.github.aedans:katalyst:0.2.0'
 }
 ```
 
@@ -25,10 +25,11 @@ Features
 - [x] Recursive, Corecursive, and Birecursive typeclasses
 - [x] Cata, ana, and hylo morphisms
 - [x] List and Nat defined using recursion schemes
-- [ ] Generalized Functor, Foldable, and Traverse instances
+- [x] Kleisli recursion schemes
+- [ ] Generalized recursion schemes
+- [ ] Functor, Foldable, and Traverse instances
+- [ ] Elgot recursion schemes
 - [ ] Env and CoEnv data types
-- [ ] Kleisli, Elgot, and Generalized recursion schemes
-- [ ] (G|M|Elgot)Algebra-based morphisms
 - [ ] Free and Cofree defined using recursion schemes
 - [ ] Recursive and Corecursive instances for Free and Cofree 
 

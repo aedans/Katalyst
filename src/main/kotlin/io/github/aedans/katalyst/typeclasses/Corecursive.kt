@@ -1,7 +1,9 @@
 package io.github.aedans.katalyst.typeclasses
 
 import io.github.aedans.katalyst.Coalgebra
+import io.github.aedans.katalyst.CoalgebraM
 import io.github.aedans.katalyst.hylo
+import io.github.aedans.katalyst.hyloM
 import kategory.*
 
 interface Corecursive<T> : Typeclass {
@@ -11,9 +13,16 @@ interface Corecursive<T> : Typeclass {
 }
 
 inline fun <reified F, reified T, A> A.ana(
-        FF: Functor<F> = functor(),
         CT: Corecursive<T> = corecursive(),
+        FF: Functor<F> = functor(),
         noinline coalg: Coalgebra<F, A>
 ): HK<T, F> = CT.ana(this, coalg, FF)
+
+inline fun <reified M, reified F, reified T, A> A.anaM(
+        CT: Corecursive<T> = corecursive(),
+        TF: Traverse<F> = traverse(),
+        MM: Monad<M> = monad(),
+        noinline coalgM: CoalgebraM<M, F, A>
+): HK<M, HK<T, F>> = hyloM(this, { MM.pure(CT.embed(it, TF)) }, coalgM, TF, MM)
 
 inline fun <reified F> corecursive(): Corecursive<F> = instance(InstanceParametrizedType(Corecursive::class.java, listOf(typeLiteral<F>())))

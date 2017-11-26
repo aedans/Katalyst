@@ -1,6 +1,7 @@
 package io.github.aedans.katalyst.typeclasses
 
 import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.AlgebraM
 import io.github.aedans.katalyst.hylo
 import kategory.*
 
@@ -15,5 +16,12 @@ inline fun <reified F, reified T, A> HK<T, F>.cata(
         FF: Functor<F> = functor(),
         noinline alg: Algebra<F, A>
 ): A = RT.cata(this, alg, FF)
+
+inline fun <reified M, reified F, reified T, A> HK<T, F>.cataM(
+        RT: Recursive<T> = recursive(),
+        TF: Traverse<F> = traverse(),
+        MM: Monad<M> = monad(),
+        noinline algM: AlgebraM<M, F, A>
+): HK<M, A> = RT.cata(this, { MM.flatMap(TF.sequence(MM, it), algM) }, TF)
 
 inline fun <reified F> recursive(): Recursive<F> = instance(InstanceParametrizedType(Recursive::class.java, listOf(typeLiteral<F>())))
