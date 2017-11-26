@@ -20,7 +20,7 @@ interface FixRecursiveInstance : Recursive<FixHK> {
 
 @instance(Fix::class)
 interface FixCorecursiveInstance : Corecursive<FixHK> {
-    override fun <F> embed(t: HK<F, HK<FixHK, F>>, FF: Functor<F>) = Fix.birecursive().embed(t, FF)
+    override fun <F> embed(t: HK<F, FixKind<F>>, FF: Functor<F>) = Fix.birecursive().embed(t, FF)
 }
 
 @instance(Fix::class)

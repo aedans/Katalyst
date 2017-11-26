@@ -2,6 +2,7 @@ package io.github.aedans.katalyst
 
 import kategory.*
 
+// TODO stack safe
 fun <F, A, B> hylo(a: A, alg: Algebra<F, B>, coalg: Coalgebra<F, A>, FF: Functor<F>): B =
         alg(FF.map(coalg(a), { hylo(it, alg, coalg, FF) }))
 

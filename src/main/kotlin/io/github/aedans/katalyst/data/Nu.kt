@@ -9,6 +9,7 @@ import kategory.*
 @higherkind
 class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {
     companion object {
+        // Necessary because of Coalgebra's variance
         @Suppress("UNCHECKED_CAST")
         operator fun <F, A> invoke(a: A, unNu: Coalgebra<F, A>) = Nu(a) { it -> unNu(it as A) }
     }
@@ -26,8 +27,7 @@ interface NuCorecursiveInstance : Corecursive<NuHK> {
 
 @instance(Nu::class)
 interface NuBirecursiveInstance : Birecursive<NuHK> {
-    override fun <F> project(t: NuKind<F>, FF: Functor<F>) = run {
-        val ev = t.ev()
+    override fun <F> project(t: NuKind<F>, FF: Functor<F>) = t.ev().let { ev ->
         FF.map(ev.unNu(ev.a)) { Nu(it, ev.unNu) }
     }
 
