@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.github.aedans:katalyst:0.2.2'
+    compile 'io.github.aedans:katalyst:0.3.0'
 }
 ```
 
@@ -26,7 +26,7 @@ Features
 - [x] Cata, ana, and hylo morphisms
 - [x] List and Nat defined using recursion schemes
 - [x] Kleisli recursion schemes
-- [ ] Generalized recursion schemes
+- [x] Generalized recursion schemes
 - [ ] Elgot recursion schemes
 - [ ] Env and CoEnv data types
 - [ ] Free and Cofree defined using recursion schemes

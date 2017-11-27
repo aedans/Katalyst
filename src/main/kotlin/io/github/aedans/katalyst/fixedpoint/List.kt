@@ -3,8 +3,8 @@ package io.github.aedans.katalyst.fixedpoint
 import io.github.aedans.katalyst.data.FixHK
 import io.github.aedans.katalyst.data.MuHK
 import io.github.aedans.katalyst.data.NuHK
-import io.github.aedans.katalyst.typeclasses.ana
-import io.github.aedans.katalyst.typeclasses.cata
+import io.github.aedans.katalyst.implicits.ana
+import io.github.aedans.katalyst.implicits.cata
 import kategory.*
 
 @higherkind
