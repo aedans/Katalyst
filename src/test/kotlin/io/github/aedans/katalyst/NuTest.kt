@@ -1,15 +1,18 @@
 package io.github.aedans.katalyst
 
 import io.github.aedans.katalyst.data.NuHK
-import io.github.aedans.katalyst.fixedpoint.*
+import io.github.aedans.katalyst.fixedpoint.int
+import io.github.aedans.katalyst.fixedpoint.list
+import io.github.aedans.katalyst.fixedpoint.nuList
+import io.github.aedans.katalyst.fixedpoint.nuNat
 import io.github.aedans.katalyst.typeclasses.birecursive
 import io.github.aedans.katalyst.typeclasses.corecursive
 import io.github.aedans.katalyst.typeclasses.recursive
 import io.kotlintest.matchers.shouldEqual
 import io.kotlintest.matchers.shouldNotBe
-import io.kotlintest.specs.StringSpec
+import kategory.UnitSpec
 
-class NuTest : StringSpec() {
+class NuTest : UnitSpec() {
     init {
         "instances can be resolved implicitly" {
             recursive<NuHK>() shouldNotBe null
