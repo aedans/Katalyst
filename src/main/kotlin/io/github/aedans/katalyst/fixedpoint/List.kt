@@ -21,6 +21,8 @@ data class ListF<out F, out A>(val value: Option<Cons<F, A>>) : ListFKind<F, A> 
     fun <B> map(f: (A) -> B): ListF<F, B> = value.map { Cons(it.head, f(it.tail)) }.listF
     fun <B> ap(ff: ListF<*, (A) -> B>) = ff.value.fold({ nil }, { map(it.tail) })
     fun <B> flatMap(f: (A) -> ListF<*, B>) = value.fold({ nil }, { f(it.tail) })
+    fun <B> foldL(b: B, f: (B, A) -> B) = value.fold({ b }, { f(b, it.tail) })
+    fun <B> foldR(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = value.fold({ lb }, { f(it.tail, lb) })
 
     companion object {
         val nil = ListF<Nothing, Nothing>(Option.None)
@@ -67,13 +69,15 @@ interface ListFMonadInstance : Monad<ListFKindPartial<*>> {
 }
 
 @instance(ListF::class)
+interface ListFFoldableInstance : Foldable<ListFKindPartial<*>> {
+    override fun <A, B> foldL(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldR(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+}
+
+@instance(ListF::class)
 interface ListFTraverseInstance : Traverse<ListFKindPartial<*>> {
-    override fun <A, B> foldL(fa: ListFKind<*, A>, b: B, f: (B, A) -> B): B =
-            fa.ev().value.fold({ b }, { f(b, it.tail) })
-
-    override fun <A, B> foldR(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) =
-            fa.ev().value.fold({ lb }, { f(it.tail, lb) })
-
+    override fun <A, B> foldL(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldR(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
     override fun <G, A, B> traverse(fa: ListFKind<*, A>, f: (A) -> HK<G, B>, GA: Applicative<G>): HK<G, ListFKind<*, B>> =
             fa.ev().value.fold({ GA.pure(ListF.nil) }, { GA.map(f(it.tail), ListF.Companion::pure) })
 }
