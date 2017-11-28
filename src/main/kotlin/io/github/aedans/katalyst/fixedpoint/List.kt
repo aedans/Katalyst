@@ -1,8 +1,5 @@
 package io.github.aedans.katalyst.fixedpoint
 
-import io.github.aedans.katalyst.data.FixHK
-import io.github.aedans.katalyst.data.MuHK
-import io.github.aedans.katalyst.data.NuHK
 import io.github.aedans.katalyst.fixedpoint.ListF.Companion.nil
 import io.github.aedans.katalyst.implicits.ana
 import io.github.aedans.katalyst.implicits.cata
@@ -90,7 +87,3 @@ inline fun <reified T, A> List<A>.rList(): RList<T, A> = ana { if (it.isEmpty())
 
 inline val <reified T, A> RList<T, A>.list get(): List<A> =
     cata { it.ev().value.fold({ emptyList() }, { listOf(it.head) + it.tail }) }
-
-val <A> List<A>.fixList: RList<FixHK, A> get() = rList()
-val <A> List<A>.muList: RList<MuHK, A> get() = rList()
-val <A> List<A>.nuList: RList<NuHK, A> get() = rList()
