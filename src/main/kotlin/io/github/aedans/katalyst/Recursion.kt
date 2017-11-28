@@ -59,6 +59,6 @@ fun <W, N, M, F, A, B> ghyloM(
         MM
 ).let { MM.map(it, CW::extract) }
 
-fun <F, G> dLaw(TF: Traverse<F>, AG: Applicative<G>): DistributiveLaw<F, G> = object : FunctionK<Nested<F, G>, Nested<G, F>> {
+fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>): DistributiveLaw<F, G> = object : FunctionK<Nested<F, G>, Nested<G, F>> {
     override fun <A> invoke(fa: HK<Nested<F, G>, A>) = TF.sequence(AG, fa.unnest()).nest()
 }
