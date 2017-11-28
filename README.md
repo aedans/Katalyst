@@ -3,7 +3,7 @@ Katalyst
 
 [![Download](https://api.bintray.com/packages/aedans/maven/katalyst/images/download.svg)](https://bintray.com/aedans/maven/katalyst/_latestVersion)
 
- [Kotlin](http://kotlinlang.org) recursion schemes with [Kategory](https://github.com/kategory/kategory).
+[Kotlin](http://kotlinlang.org) recursion schemes with [Kategory](https://github.com/kategory/kategory).
 
 Gradle
 ------
