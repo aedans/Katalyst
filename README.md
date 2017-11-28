@@ -28,7 +28,7 @@ Features
 - [x] Kleisli recursion schemes
 - [x] Generalized recursion schemes
 - [ ] Advanced recursion schemes (apo, prepo, histo, futu, etc.)
-- [ ] Env and CoEnv data types
+- [ ] EnvT and CoEnv data types
 - [ ] Free and Cofree defined using recursion schemes
 - [ ] Recursive and Corecursive instances for Free and Cofree 
 
