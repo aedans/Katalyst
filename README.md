@@ -23,7 +23,7 @@ Features
 
 - [x] Mu, Nu, and Fix data types
 - [x] Recursive, Corecursive, and Birecursive typeclasses
-- [x] Cata, ana, and hylo morphisms
+- [x] Cata, ana, and hylo recursion schemes
 - [x] List and Nat defined using recursion schemes
 - [x] Kleisli recursion schemes
 - [x] Generalized recursion schemes
