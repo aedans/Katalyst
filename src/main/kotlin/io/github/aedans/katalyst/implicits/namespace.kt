@@ -114,3 +114,13 @@ inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
 // other
 
 inline fun <reified F, reified G> distributiveLaw() = distributiveLaw(traverse<F>(), applicative<G>())
+
+inline fun <reified F, reified T> HK<T, F>.project(
+        RT: Recursive<T> = recursive(),
+        FF: Functor<F> = functor()
+) = RT.project(this, FF)
+
+inline fun <reified F, reified T> HK<F, HK<T, F>>.embed(
+        CT: Corecursive<T> = corecursive(),
+        FF: Functor<F> = functor()
+) = CT.embed(this, FF)
