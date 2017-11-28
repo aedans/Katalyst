@@ -20,7 +20,7 @@ interface Corecursive<T> : Typeclass {
 
     fun <F, N, M, A> ganaM(a: A, dNF: DistributiveLaw<N, F>, gCoalgM: GCoalgebraM<N, M, F, A>,
                            TF: Traverse<F>, MN: Monad<N>, TN: Traverse<N>, MM: Monad<M>): HK<M, HK<T, F>> =
-            ghyloM(a, distCata(TF), dNF, { MM.pure(embed(TF.map(it) { it.ev().value }, TF)) }, gCoalgM, comonad(), traverse(), MN, TN, MM, TF)
+            ghyloM(a, dLaw(TF, Id.applicative()), dNF, { MM.pure(embed(TF.map(it) { it.ev().value }, TF)) }, gCoalgM, comonad(), traverse(), MN, TN, MM, TF)
 }
 
 inline fun <reified F> corecursive(): Corecursive<F> = instance(InstanceParametrizedType(Corecursive::class.java, listOf(typeLiteral<F>())))

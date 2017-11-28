@@ -26,7 +26,7 @@ inline fun <reified F, reified W, reified T, A> HK<T, F>.gcata(
         RT: Recursive<T> = recursive(),
         FF: Functor<F> = functor(),
         CW: Comonad<W> = comonad(),
-        dFW: DistributiveLaw<F, W>,
+        dFW: DistributiveLaw<F, W> = dLaw(),
         noinline gAlg: GAlgebra<W, F, A>
 ) = RT.gcata(this, dFW, gAlg, FF, CW)
 
@@ -36,7 +36,7 @@ inline fun <reified F, reified W, reified M, reified T, A> HK<T, F>.gcataM(
         TW: Traverse<W> = traverse(),
         MM: Monad<M> = monad(),
         CW: Comonad<W> = comonad(),
-        dFW: DistributiveLaw<F, W>,
+        dFW: DistributiveLaw<F, W> = dLaw(),
         noinline gAlgM: GAlgebraM<W, M, F, A>
 ) = RT.gcataM(this, dFW, gAlgM, TF, TW, MM, CW)
 
@@ -59,7 +59,7 @@ inline fun <reified F, reified N, reified T, A> A.gana(
         CT: Corecursive<T> = corecursive(),
         FF: Functor<F> = functor(),
         MN: Monad<N> = monad(),
-        dNF: DistributiveLaw<N, F>,
+        dNF: DistributiveLaw<N, F> = dLaw(),
         noinline gCoalg: GCoalgebra<N, F, A>
 ) = CT.gana(this, dNF, gCoalg, FF, MN)
 
@@ -69,7 +69,7 @@ inline fun <reified F, reified N, reified M, reified T, A> A.ganaM(
         MN: Monad<N> = monad(),
         TN: Traverse<N> = traverse(),
         MM: Monad<M> = monad(),
-        dNF: DistributiveLaw<N, F>,
+        dNF: DistributiveLaw<N, F> = dLaw(),
         noinline gCoalgM: GCoalgebraM<N, M, F, A>
 ) = CT.ganaM(this, dNF, gCoalgM, TF, MN, TN, MM)
 
@@ -92,8 +92,8 @@ inline fun <reified W, reified N, reified F, A, B> A.ghylo(
         CW: Comonad<W> = comonad(),
         MN: Monad<N> = monad(),
         FF: Functor<F> = functor(),
-        dFW: DistributiveLaw<F, W>,
-        dNF: DistributiveLaw<N, F>,
+        dFW: DistributiveLaw<F, W> = dLaw(),
+        dNF: DistributiveLaw<N, F> = dLaw(),
         noinline gAlg: GAlgebra<W, F, B>,
         noinline gCoalg: GCoalgebra<N, F, A>
 ) = ghylo(this, dFW, dNF, gAlg, gCoalg, CW, MN, FF)
@@ -105,12 +105,12 @@ inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         TN: Traverse<N> = traverse(),
         MM: Monad<M> = monad(),
         TF: Traverse<F> = traverse(),
-        dFW: DistributiveLaw<F, W>,
-        dNF: DistributiveLaw<N, F>,
+        dFW: DistributiveLaw<F, W> = dLaw(),
+        dNF: DistributiveLaw<N, F> = dLaw(),
         noinline gAlgM: GAlgebraM<W, M, F, B>,
         noinline gCoalgM: GCoalgebraM<N, M, F, A>
 ) = ghyloM(this, dFW, dNF, gAlgM, gCoalgM, CW, TW, MN, TN, MM, TF)
 
 // other
 
-inline fun <reified F> distCata() = distCata(traverse<F>())
+inline fun <reified F, reified G> dLaw() = dLaw(traverse<F>(), applicative<G>())
