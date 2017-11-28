@@ -1,8 +1,8 @@
+@file:Suppress("FunctionName")
+
 package io.github.aedans.katalyst
 
-import kategory.FunctionK
 import kategory.HK
-import kategory.Nested
 
 typealias Algebra<F, A> = (HK<F, A>) -> A
 typealias AlgebraM<M, F, A> = (HK<F, A>) -> HK<M, A>
@@ -14,4 +14,12 @@ typealias CoalgebraM<M, F, A> = (A) -> HK<M, HK<F, A>>
 typealias GCoalgebra<N, F, A> = (A) -> HK<F, HK<N, A>>
 typealias GCoalgebraM<N, M, F, A> = (A) -> HK<M, HK<F, HK<N, A>>>
 
-typealias DistributiveLaw<F, G> = FunctionK<Nested<F, G>, Nested<G, F>>
+fun <F, A> Algebra(it: Algebra<F, A>) = it
+fun <M, F, A> AlgebraM(it: AlgebraM<M, F, A>) = it
+fun <N, F, A> GAlgebra(it: GAlgebra<N, F, A>) = it
+fun <N, M, F, A> GAlgebraM(it: GAlgebraM<N, M, F, A>) = it
+
+fun <F, A> Coalgebra(it: Coalgebra<F, A>) = it
+fun <M, F, A> CoalgebraM(it: CoalgebraM<M, F, A>) = it
+fun <N, F, A> GCoalgebra(it: GCoalgebra<N, F, A>) = it
+fun <N, M, F, A> GCoalgebraM(it: GCoalgebraM<N, M, F, A>) = it

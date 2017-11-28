@@ -1,41 +1,12 @@
-Katalyst
-========
+package io.github.aedans.katalyst.examples
 
-[![Download](https://api.bintray.com/packages/aedans/maven/katalyst/images/download.svg)](https://bintray.com/aedans/maven/katalyst/_latestVersion)
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.data.Fix
+import io.github.aedans.katalyst.implicits.cata
+import io.kotlintest.properties.Gen
+import io.kotlintest.properties.forAll
+import kategory.*
 
-[Kotlin](http://kotlinlang.org) recursion schemes with [Kategory](https://github.com/kategory/kategory).
-
-Gradle
-------
-
-```gradle
-repositories {
-    maven { url 'https://dl.bintray.com/aedans/maven/' }
-}
-
-dependencies {
-    compile 'io.github.aedans:katalyst:0.3.0'
-}
-```
-
-Features
---------
-
-- [x] Mu, Nu, and Fix data types
-- [x] Recursive, Corecursive, and Birecursive typeclasses
-- [x] Cata, ana, and hylo morphisms
-- [x] List and Nat defined using recursion schemes
-- [x] Kleisli recursion schemes
-- [x] Generalized recursion schemes
-- [ ] Advanced recursion schemes (apo, prepo, histo, futu, etc.)
-- [ ] Env and CoEnv data types
-- [ ] Free and Cofree defined using recursion schemes
-- [ ] Recursive and Corecursive instances for Free and Cofree 
-
-Code sample
------------
-
-```kotlin
 // Define an expression pattern type
 @higherkind
 sealed class ExprP<out A> : ExprPKind<A> {
@@ -92,21 +63,45 @@ fun main(args: Array<String>) {
     expr.cata(alg = evalAlgebra) // 3
     expr.cata(alg = showAlgebra) // "1 + 2"
 }
-```
 
-Contributing
-------------
+class ExprTest : UnitSpec() {
+    init {
+        testLaws(FunctorLaws.laws(ExprP.functor(), { ExprP.Int(it) }, Eq.any()))
 
-Katalyst is far from being complete, and any help is greatly
-appreciated. If you find a bug, please open an issue. If you just want
-to write some code, there are plenty of features that need to be implemented;
-just open a pull request and hack at it.
+        "Int should evaluate to it" {
+            forAll(Gen.int()) {
+                int(it).cata(alg = evalAlgebra) == it
+            }
+        }
 
-Resources
----------
+        "Int should show it" {
+            forAll(Gen.int()) {
+                int(it).cata(alg = showAlgebra) == it.toString()
+            }
+        }
 
-[Recursion Schemes](https://github.com/ekmett/recursion-schemes), the
-original Haskell implementation.
+        "Neg should evaluate to -it" {
+            forAll(Gen.int()) {
+                neg(int(it)).cata(alg = evalAlgebra) == -it
+            }
+        }
 
-[Matryoshka](https://github.com/slamdata/matryoshka), which
-much of Katalyst's code is based off of.
+        "Neg should show -it" {
+            forAll(Gen.int()) {
+                neg(int(it)).cata(alg = showAlgebra) == "-$it"
+            }
+        }
+
+        "Plus should evaluate to a + b" {
+            forAll(Gen.int(), Gen.int()) { a, b ->
+                plus(int(a), int(b)).cata(alg = evalAlgebra) == a + b
+            }
+        }
+
+        "Plus should show a + b" {
+            forAll(Gen.int(), Gen.int()) { a, b ->
+                plus(int(a), int(b)).cata(alg = showAlgebra) == "$a + $b"
+            }
+        }
+    }
+}

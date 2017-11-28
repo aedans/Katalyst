@@ -1,8 +1,8 @@
 group 'io.github.aedans'
-version '0.3.0'
+version '0.3.1'
 
 buildscript {
-    ext.kotlin_version = '1.1.60'
+    ext.kotlin_version = '1.1.61'
 
     repositories {
         mavenCentral()
@@ -35,7 +35,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile 'io.kategory:kategory:0.3.11'
     kapt    'io.kategory:kategory-annotations-processor:0.3.11'
+    kaptTest    'io.kategory:kategory-annotations-processor:0.3.11'
     testCompile 'io.kotlintest:kotlintest:2.0.7'
+    testCompile 'io.kategory:kategory:0.3.11'
     testCompile 'io.kategory:kategory-test:0.3.11'
 }
 
