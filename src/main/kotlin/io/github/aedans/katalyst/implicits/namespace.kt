@@ -79,14 +79,14 @@ inline fun <reified F, A, B> A.hylo(
         FF: Functor<F> = functor(),
         noinline alg: Algebra<F, B>,
         noinline coalg: Coalgebra<F, A>
-) = io.github.aedans.katalyst.hylo(this, alg, coalg, FF)
+) = hylo(this, alg, coalg, FF)
 
 inline fun <reified F, reified M, A, B> A.hyloM(
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
         noinline algM: AlgebraM<M, F, B>,
         noinline coalgM: CoalgebraM<M, F, A>
-) = io.github.aedans.katalyst.hyloM(this, algM, coalgM, TF, MM)
+) = hyloM(this, algM, coalgM, TF, MM)
 
 inline fun <reified W, reified N, reified F, A, B> A.ghylo(
         CW: Comonad<W> = comonad(),
@@ -96,7 +96,7 @@ inline fun <reified W, reified N, reified F, A, B> A.ghylo(
         dNF: DistributiveLaw<N, F>,
         noinline gAlg: GAlgebra<W, F, B>,
         noinline gCoalg: GCoalgebra<N, F, A>
-) = io.github.aedans.katalyst.ghylo(this, dFW, dNF, gAlg, gCoalg, CW, MN, FF)
+) = ghylo(this, dFW, dNF, gAlg, gCoalg, CW, MN, FF)
 
 inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         CW: Comonad<W> = comonad(),
@@ -109,7 +109,7 @@ inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         dNF: DistributiveLaw<N, F>,
         noinline gAlgM: GAlgebraM<W, M, F, B>,
         noinline gCoalgM: GCoalgebraM<N, M, F, A>
-) = io.github.aedans.katalyst.ghyloM(this, dFW, dNF, gAlgM, gCoalgM, CW, TW, MN, TN, MM, TF)
+) = ghyloM(this, dFW, dNF, gAlgM, gCoalgM, CW, TW, MN, TN, MM, TF)
 
 // other
 
