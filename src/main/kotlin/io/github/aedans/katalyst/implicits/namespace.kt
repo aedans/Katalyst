@@ -110,3 +110,7 @@ inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         noinline gAlgM: GAlgebraM<W, M, F, B>,
         noinline gCoalgM: GCoalgebraM<N, M, F, A>
 ) = io.github.aedans.katalyst.ghyloM(this, dFW, dNF, gAlgM, gCoalgM, CW, TW, MN, TN, MM, TF)
+
+// other
+
+inline fun <reified F> distCata() = distCata(traverse<F>())
