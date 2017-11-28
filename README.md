@@ -86,7 +86,7 @@ val showAlgebra = Algebra<ExprPHK, String> {
     }
 }
 
-// Use morphisms to generically apply algebras
+// Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
     val expr = plus(int(1), int(2))
     expr.cata(alg = evalAlgebra) // 3
