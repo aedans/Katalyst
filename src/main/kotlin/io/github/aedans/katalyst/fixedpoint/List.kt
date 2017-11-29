@@ -1,5 +1,7 @@
 package io.github.aedans.katalyst.fixedpoint
 
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.fixedpoint.ListF.Companion.nil
 import io.github.aedans.katalyst.implicits.ana
 import io.github.aedans.katalyst.implicits.cata
@@ -83,7 +85,14 @@ val <F, A> Option<Cons<F, A>>.listF get() = ListF(this)
 
 typealias RList<T, A> = HK<T, ListFKindPartial<A>>
 
-inline fun <reified T, A> List<A>.rList(): RList<T, A> = ana { if (it.isEmpty()) ListF.nil else ListF.cons(it.first(), it.drop(1)) }
+fun <A> toList() = Coalgebra<ListFKindPartial<A>, List<A>> {
+    if (it.isEmpty()) ListF.nil else ListF.cons(it.first(), it.drop(1))
+}
 
-inline val <reified T, A> RList<T, A>.list get(): List<A> =
-    cata { it.ev().value.fold({ emptyList() }, { listOf(it.head) + it.tail }) }
+fun <A> fromList() = Algebra<ListFKindPartial<A>, List<A>> {
+    it.ev().value.fold({ emptyList() }, { listOf(it.head) + it.tail })
+}
+
+inline fun <reified T, A> List<A>.rList(): RList<T, A> = ana(coalg = io.github.aedans.katalyst.fixedpoint.toList())
+
+inline fun <reified T, A> RList<T, A>.list(): List<A> = cata(alg = fromList())

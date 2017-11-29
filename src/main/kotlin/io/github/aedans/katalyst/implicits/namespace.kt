@@ -40,6 +40,21 @@ inline fun <reified F, reified W, reified M, reified T, A> HK<T, F>.gcataM(
         noinline gAlgM: GAlgebraM<W, M, F, A>
 ) = RT.gcataM(this, dFW, gAlgM, TF, TW, MM, CW)
 
+// para
+
+inline fun <reified F, reified T, A> HK<T, F>.para(
+        RT: Recursive<T> = recursive(),
+        FF: Functor<F> = functor(),
+        noinline gAlg: GAlgebra<PairKWKindPartial<HK<T, F>>, F, A>
+) = RT.para(this, gAlg, FF)
+
+inline fun <reified F, reified M, reified T, A> HK<T, F>.paraM(
+        RT: Recursive<T> = recursive(),
+        TF: Traverse<F> = traverse(),
+        MM: Monad<M> = monad(),
+        noinline gAlgM: GAlgebraM<PairKWKindPartial<HK<T, F>>, M, F, A>
+) = RT.paraM(this, gAlgM, TF, MM)
+
 // ana
 
 inline fun <reified F, reified T, A> A.ana(
