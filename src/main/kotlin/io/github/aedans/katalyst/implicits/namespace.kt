@@ -88,6 +88,21 @@ inline fun <reified F, reified N, reified M, reified T, A> A.ganaM(
         noinline gCoalgM: GCoalgebraM<N, M, F, A>
 ) = CT.ganaM(this, dNF, gCoalgM, TF, MN, TN, MM)
 
+// apo
+
+inline fun <reified F, reified T, A> A.apo(
+        CT: Corecursive<T> = corecursive(),
+        FF: Functor<F> = functor(),
+        noinline gCoalg: GCoalgebra<EitherKindPartial<HK<T, F>>, F, A>
+) = CT.apo(this, gCoalg, FF)
+
+inline fun <reified F, reified M, reified T,A> A.apoM(
+        CT: Corecursive<T> = corecursive(),
+        TF: Traverse<F> = traverse(),
+        MM: Monad<M> = monad(),
+        noinline gCoalgM: GCoalgebraM<EitherKindPartial<HK<T, F>>, M, F, A>
+) = CT.apoM(this, gCoalgM, TF, MM)
+
 // hylo
 
 inline fun <reified F, A, B> A.hylo(

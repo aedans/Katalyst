@@ -8,7 +8,7 @@ fun <F, A, B> hylo(
         alg: Algebra<F, B>,
         coalg: Coalgebra<F, A>,
         FF: Functor<F>
-): B = alg(FF.map(coalg(a), { hylo(it, alg, coalg, FF) }))
+): B = alg(FF.map(coalg(a)) { hylo(it, alg, coalg, FF) })
 
 fun <M, F, A, B> hyloM(
         a: A,

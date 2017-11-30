@@ -1,12 +1,11 @@
 package io.github.aedans.katalyst.laws
 
+import io.github.aedans.katalyst.GCoalgebra
 import io.github.aedans.katalyst.fixedpoint.Nat
 import io.github.aedans.katalyst.fixedpoint.int
+import io.github.aedans.katalyst.fixedpoint.nat
 import io.github.aedans.katalyst.fixedpoint.toNat
-import io.github.aedans.katalyst.implicits.ana
-import io.github.aedans.katalyst.implicits.anaM
-import io.github.aedans.katalyst.implicits.gana
-import io.github.aedans.katalyst.implicits.ganaM
+import io.github.aedans.katalyst.implicits.*
 import io.kotlintest.properties.forAll
 import kategory.*
 
@@ -31,6 +30,21 @@ object CorecursiveLaws {
                     val ana: Nat<T> = it.ana(coalg = toNat)
                     val gana: IdKind<Nat<T>> = it.ganaM { Id.pure(if (it == 0) Option.None else Option.Some(Id.pure(it - 1))) }
                     ana.int() == gana.value().int()
+                }
+            },
+            Law("Corecursive Laws: apo == apoM Id") {
+                forAll(intGen) {
+                    val gCoalg: GCoalgebra<EitherKindPartial<Nat<T>>, OptionHK, Int> = {
+                        when {
+                            it == 0 -> Option.None
+                            it % 2 == 0 -> Option.Some(1.nat<T>().left())
+                            else -> Option.Some((it - 1).right())
+                        }
+                    }
+
+                    val apo: Nat<T> = it.apo(gCoalg = gCoalg)
+                    val apoM: IdKind<Nat<T>> = it.apoM { Id.pure(gCoalg(it)) }
+                    apo.int() == apoM.value().int()
                 }
             }
     )

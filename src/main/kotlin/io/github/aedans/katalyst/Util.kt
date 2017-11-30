@@ -10,3 +10,5 @@ operator fun <F, A> Yoneda.Companion.invoke(fa: HK<F, A>, FF: Functor<F>) = obje
 operator fun <F, G, B> FunctionK<Nested<F, G>, Nested<G, F>>.invoke(p0: HK<F, HK<G, B>>) = this(p0.nest()).unnest()
 
 typealias DistributiveLaw<F, G> = FunctionK<Nested<F, G>, Nested<G, F>>
+
+fun <T> Either<T, T>.merge() = fold(::identity, ::identity)
