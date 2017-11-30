@@ -1,11 +1,10 @@
 package io.github.aedans.katalyst
 
-import io.github.aedans.katalyst.fixedpoint.ListF
-import io.github.aedans.katalyst.fixedpoint.ListFKindPartial
+import io.github.aedans.katalyst.fixedpoint.*
 import kategory.*
 import kategory.laws.EqLaws
 
-class ListTest : UnitSpec() {
+class ListFTest : UnitSpec() {
     init {
         testLaws(EqLaws.laws { ListF.pure(it) })
         testLaws(FunctorLaws.laws<ListFKindPartial<*>>(functor(), { ListF.pure(it) }, eq()))
