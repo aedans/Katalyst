@@ -2,8 +2,7 @@ package io.github.aedans.katalyst.fixedpoint
 
 import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.fixedpoint.ListF.Companion.nil
-import io.github.aedans.katalyst.implicits.ana
-import io.github.aedans.katalyst.implicits.cata
+import io.github.aedans.katalyst.implicits.*
 import kategory.*
 
 @higherkind

@@ -1,13 +1,8 @@
 package io.github.aedans.katalyst.data
 
 import io.github.aedans.katalyst.Algebra
-import io.github.aedans.katalyst.typeclasses.Birecursive
-import io.github.aedans.katalyst.typeclasses.Corecursive
-import io.github.aedans.katalyst.typeclasses.Recursive
-import kategory.Functor
-import kategory.HK
-import kategory.higherkind
-import kategory.instance
+import io.github.aedans.katalyst.typeclasses.*
+import kategory.*
 
 @higherkind
 abstract class Mu<out F> : MuKind<F> {

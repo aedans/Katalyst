@@ -1,10 +1,7 @@
 package io.github.aedans.katalyst.implicits
 
 import io.github.aedans.katalyst.*
-import io.github.aedans.katalyst.typeclasses.Corecursive
-import io.github.aedans.katalyst.typeclasses.Recursive
-import io.github.aedans.katalyst.typeclasses.corecursive
-import io.github.aedans.katalyst.typeclasses.recursive
+import io.github.aedans.katalyst.typeclasses.*
 import kategory.*
 
 // cata

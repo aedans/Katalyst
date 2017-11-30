@@ -1,12 +1,7 @@
 package io.github.aedans.katalyst.data
 
-import io.github.aedans.katalyst.typeclasses.Birecursive
-import io.github.aedans.katalyst.typeclasses.Corecursive
-import io.github.aedans.katalyst.typeclasses.Recursive
-import kategory.Functor
-import kategory.HK
-import kategory.higherkind
-import kategory.instance
+import io.github.aedans.katalyst.typeclasses.*
+import kategory.*
 
 @higherkind
 data class Fix<out A>(val unfix: HK<A, FixKind<A>>) : FixKind<A> {

@@ -1,9 +1,7 @@
 package io.github.aedans.katalyst.data
 
 import io.github.aedans.katalyst.Coalgebra
-import io.github.aedans.katalyst.typeclasses.Birecursive
-import io.github.aedans.katalyst.typeclasses.Corecursive
-import io.github.aedans.katalyst.typeclasses.Recursive
+import io.github.aedans.katalyst.typeclasses.*
 import kategory.*
 
 @higherkind

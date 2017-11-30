@@ -1,9 +1,6 @@
 package io.github.aedans.katalyst.typeclasses
 
-import kategory.InstanceParametrizedType
-import kategory.Typeclass
-import kategory.instance
-import kategory.typeLiteral
+import kategory.*
 
 interface Birecursive<F> : Recursive<F>, Corecursive<F>, Typeclass
 

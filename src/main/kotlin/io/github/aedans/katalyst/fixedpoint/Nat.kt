@@ -1,15 +1,9 @@
 package io.github.aedans.katalyst.fixedpoint
 
-import io.github.aedans.katalyst.Algebras
-import io.github.aedans.katalyst.PairKWKindPartial
-import io.github.aedans.katalyst.ev
-import io.github.aedans.katalyst.implicits.ana
-import io.github.aedans.katalyst.implicits.cata
-import kategory.HK
-import kategory.Option.None
-import kategory.Option.Some
-import kategory.OptionHK
-import kategory.ev
+import io.github.aedans.katalyst.*
+import io.github.aedans.katalyst.implicits.*
+import kategory.*
+import kategory.Option.*
 
 typealias NatR<T> = HK<T, OptionHK>
 
