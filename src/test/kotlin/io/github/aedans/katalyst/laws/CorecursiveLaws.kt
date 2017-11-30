@@ -1,10 +1,11 @@
 package io.github.aedans.katalyst.laws
 
+import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.GCoalgebra
-import io.github.aedans.katalyst.fixedpoint.Nat
+import io.github.aedans.katalyst.fixedpoint.NatR
 import io.github.aedans.katalyst.fixedpoint.int
-import io.github.aedans.katalyst.fixedpoint.nat
-import io.github.aedans.katalyst.fixedpoint.toNat
+import io.github.aedans.katalyst.fixedpoint.natR
+import io.github.aedans.katalyst.fixedpoint.toNatR
 import io.github.aedans.katalyst.implicits.*
 import io.kotlintest.properties.forAll
 import kategory.*
@@ -13,37 +14,37 @@ object CorecursiveLaws {
     inline fun <reified T> laws(): List<Law> = listOf(
             Law("Corecursive Laws: ana == anaM Id") {
                 forAll(intGen) {
-                    val ana: Nat<T> = it.ana(coalg = toNat)
-                    val anaM: IdKind<Nat<T>> = it.anaM { Id.pure(toNat(it)) }
+                    val ana: NatR<T> = it.ana(coalg = Algebras.toNatR())
+                    val anaM: IdKind<NatR<T>> = it.anaM { Id.pure(Algebras.toNatR()(it)) }
                     ana.int() == anaM.ev().value.int()
                 }
             },
             Law("Corecursive Laws: ana == gana Id") {
                 forAll(intGen) {
-                    val ana: Nat<T> = it.ana(coalg = toNat)
-                    val gana: Nat<T> = it.gana { if (it == 0) Option.None else Option.Some(Id.pure(it - 1)) }
+                    val ana: NatR<T> = it.ana(coalg = Algebras.toNatR())
+                    val gana: NatR<T> = it.gana { if (it == 0) Option.None else Option.Some(Id.pure(it - 1)) }
                     ana.int() == gana.int()
                 }
             },
             Law("Corecursive Laws: ana == ganaM Id Id") {
                 forAll(intGen) {
-                    val ana: Nat<T> = it.ana(coalg = toNat)
-                    val gana: IdKind<Nat<T>> = it.ganaM { Id.pure(if (it == 0) Option.None else Option.Some(Id.pure(it - 1))) }
+                    val ana: NatR<T> = it.ana(coalg = Algebras.toNatR())
+                    val gana: IdKind<NatR<T>> = it.ganaM { Id.pure(if (it == 0) Option.None else Option.Some(Id.pure(it - 1))) }
                     ana.int() == gana.value().int()
                 }
             },
             Law("Corecursive Laws: apo == apoM Id") {
                 forAll(intGen) {
-                    val gCoalg: GCoalgebra<EitherKindPartial<Nat<T>>, OptionHK, Int> = {
+                    val gCoalg: GCoalgebra<EitherKindPartial<NatR<T>>, OptionHK, Int> = {
                         when {
                             it == 0 -> Option.None
-                            it % 2 == 0 -> Option.Some(1.nat<T>().left())
+                            it % 2 == 0 -> Option.Some(1.natR<T>().left())
                             else -> Option.Some((it - 1).right())
                         }
                     }
 
-                    val apo: Nat<T> = it.apo(gCoalg = gCoalg)
-                    val apoM: IdKind<Nat<T>> = it.apoM { Id.pure(gCoalg(it)) }
+                    val apo: NatR<T> = it.apo(gCoalg = gCoalg)
+                    val apoM: IdKind<NatR<T>> = it.apoM { Id.pure(gCoalg(it)) }
                     apo.int() == apoM.value().int()
                 }
             }

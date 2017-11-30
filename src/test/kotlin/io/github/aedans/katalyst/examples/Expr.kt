@@ -1,6 +1,6 @@
 package io.github.aedans.katalyst.examples
 
-import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.data.Fix
 import io.github.aedans.katalyst.implicits.cata
 import io.kotlintest.properties.Gen
@@ -38,7 +38,7 @@ fun neg(e: Expr) = Fix(ExprP.Neg(e))
 fun plus(a: Expr, b: Expr) = Fix(ExprP.Plus(a, b))
 
 // Define an algebra to evaluate an expression
-val evalAlgebra = Algebra<ExprPHK, Int> {
+fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value
@@ -48,7 +48,7 @@ val evalAlgebra = Algebra<ExprPHK, Int> {
 }
 
 // Define an algebra to show an expression
-val showAlgebra = Algebra<ExprPHK, String> {
+fun Algebras.showExpr() = Algebra<ExprPHK, String> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value.toString()
@@ -60,8 +60,8 @@ val showAlgebra = Algebra<ExprPHK, String> {
 // Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
     val expr = plus(int(1), int(2))
-    expr.cata(alg = evalAlgebra) // 3
-    expr.cata(alg = showAlgebra) // "1 + 2"
+    expr.cata(alg = Algebras.evalExpr()) // 3
+    expr.cata(alg = Algebras.showExpr()) // "1 + 2"
 }
 
 class ExprTest : UnitSpec() {
@@ -70,37 +70,37 @@ class ExprTest : UnitSpec() {
 
         "Int should evaluate to it" {
             forAll(Gen.int()) {
-                int(it).cata(alg = evalAlgebra) == it
+                int(it).cata(alg = Algebras.evalExpr()) == it
             }
         }
 
         "Int should show it" {
             forAll(Gen.int()) {
-                int(it).cata(alg = showAlgebra) == it.toString()
+                int(it).cata(alg = Algebras.showExpr()) == it.toString()
             }
         }
 
         "Neg should evaluate to -it" {
             forAll(Gen.int()) {
-                neg(int(it)).cata(alg = evalAlgebra) == -it
+                neg(int(it)).cata(alg = Algebras.evalExpr()) == -it
             }
         }
 
         "Neg should show -it" {
             forAll(Gen.int()) {
-                neg(int(it)).cata(alg = showAlgebra) == "-$it"
+                neg(int(it)).cata(alg = Algebras.showExpr()) == "-$it"
             }
         }
 
         "Plus should evaluate to a + b" {
             forAll(Gen.int(), Gen.int()) { a, b ->
-                plus(int(a), int(b)).cata(alg = evalAlgebra) == a + b
+                plus(int(a), int(b)).cata(alg = Algebras.evalExpr()) == a + b
             }
         }
 
         "Plus should show a + b" {
             forAll(Gen.int(), Gen.int()) { a, b ->
-                plus(int(a), int(b)).cata(alg = showAlgebra) == "$a + $b"
+                plus(int(a), int(b)).cata(alg = Algebras.showExpr()) == "$a + $b"
             }
         }
     }

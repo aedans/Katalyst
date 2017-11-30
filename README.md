@@ -68,7 +68,7 @@ fun neg(e: Expr) = Fix(ExprP.Neg(e))
 fun plus(a: Expr, b: Expr) = Fix(ExprP.Plus(a, b))
 
 // Define an algebra to evaluate an expression
-val evalAlgebra = Algebra<ExprPHK, Int> {
+fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value
@@ -78,7 +78,7 @@ val evalAlgebra = Algebra<ExprPHK, Int> {
 }
 
 // Define an algebra to show an expression
-val showAlgebra = Algebra<ExprPHK, String> {
+fun Algebras.showExpr() = Algebra<ExprPHK, String> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value.toString()
@@ -90,8 +90,8 @@ val showAlgebra = Algebra<ExprPHK, String> {
 // Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
     val expr = plus(int(1), int(2))
-    expr.cata(alg = evalAlgebra) // 3
-    expr.cata(alg = showAlgebra) // "1 + 2"
+    expr.cata(alg = Algebras.evalExpr()) // 3
+    expr.cata(alg = Algebras.showExpr()) // "1 + 2"
 }
 ```
 
