@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.github.aedans:katalyst:0.4.1'
+    compile 'io.github.aedans:katalyst:$katalyst_version'
 }
 ```
 
