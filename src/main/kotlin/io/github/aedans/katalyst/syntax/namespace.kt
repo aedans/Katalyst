@@ -1,4 +1,4 @@
-package io.github.aedans.katalyst.implicits
+package io.github.aedans.katalyst.syntax
 
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.typeclasses.*

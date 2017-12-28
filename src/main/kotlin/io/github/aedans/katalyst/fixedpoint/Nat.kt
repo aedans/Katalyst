@@ -1,7 +1,7 @@
 package io.github.aedans.katalyst.fixedpoint
 
 import io.github.aedans.katalyst.*
-import io.github.aedans.katalyst.implicits.*
+import io.github.aedans.katalyst.syntax.*
 import kategory.*
 import kategory.Option.*
 

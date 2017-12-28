@@ -2,13 +2,9 @@ package io.github.aedans.katalyst.laws
 
 import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.fixedpoint.*
-import io.github.aedans.katalyst.implicits.ana
-import io.github.aedans.katalyst.implicits.cata
-import io.github.aedans.katalyst.implicits.hylo
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
-import kategory.Law
-import kategory.OptionHK
+import io.github.aedans.katalyst.syntax.*
+import io.kotlintest.properties.*
+import kategory.*
 
 object BirecursiveLaws {
     inline fun <reified T> laws(): List<Law> = RecursiveLaws.laws<T>() + CorecursiveLaws.laws<T>() + listOf(

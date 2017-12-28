@@ -1,12 +1,8 @@
 package io.github.aedans.katalyst.laws
 
-import io.github.aedans.katalyst.Algebras
-import io.github.aedans.katalyst.GCoalgebra
-import io.github.aedans.katalyst.fixedpoint.NatR
-import io.github.aedans.katalyst.fixedpoint.int
-import io.github.aedans.katalyst.fixedpoint.natR
-import io.github.aedans.katalyst.fixedpoint.toNatR
-import io.github.aedans.katalyst.implicits.*
+import io.github.aedans.katalyst.*
+import io.github.aedans.katalyst.fixedpoint.*
+import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.forAll
 import kategory.*
 

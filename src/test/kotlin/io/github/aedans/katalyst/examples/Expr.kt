@@ -2,9 +2,8 @@ package io.github.aedans.katalyst.examples
 
 import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.data.Fix
-import io.github.aedans.katalyst.implicits.cata
-import io.kotlintest.properties.Gen
-import io.kotlintest.properties.forAll
+import io.github.aedans.katalyst.syntax.cata
+import io.kotlintest.properties.*
 import kategory.*
 
 // Define an expression pattern type
