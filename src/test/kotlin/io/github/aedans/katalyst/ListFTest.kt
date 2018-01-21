@@ -1,8 +1,9 @@
 package io.github.aedans.katalyst
 
+import arrow.test.UnitSpec
+import arrow.test.laws.*
+import arrow.typeclasses.*
 import io.github.aedans.katalyst.fixedpoint.*
-import kategory.*
-import kategory.laws.EqLaws
 
 class ListFTest : UnitSpec() {
     init {

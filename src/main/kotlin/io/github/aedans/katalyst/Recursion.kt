@@ -1,6 +1,10 @@
 package io.github.aedans.katalyst
 
-import kategory.*
+import arrow.HK
+import arrow.core.FunctionK
+import arrow.free.*
+import arrow.instances.ComposedFunctor
+import arrow.typeclasses.*
 
 // TODO stack safe
 fun <F, A, B> hylo(
@@ -34,9 +38,9 @@ fun <W, N, F, A, B> ghylo(
         FF: Functor<F>
 ): B = hylo<YonedaKindPartial<F>, HK<N, A>, HK<W, B>>(
         MN.pure(a),
-        { CW.map(dFW.invoke(it.ev().map(CW::duplicate, FF).lower()), gAlg) },
-        { Yoneda(FF.map(dNF.invoke(MN.map(it, gCoalg)), MN::flatten), FF) },
-        Yoneda.functor(FF, Unit)
+        { CW.map(dFW.invoke(it.ev().map(CW::duplicate).lower()), gAlg) },
+        { Yoneda.apply(FF.map(dNF.invoke(MN.map(it, gCoalg)), MN::flatten), FF) },
+        Yoneda.functor()
 ).let(CW::extract)
 
 fun <W, N, M, F, A, B> ghyloM(

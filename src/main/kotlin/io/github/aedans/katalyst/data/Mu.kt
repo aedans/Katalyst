@@ -1,8 +1,9 @@
 package io.github.aedans.katalyst.data
 
+import arrow.*
+import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.Algebra
 import io.github.aedans.katalyst.typeclasses.*
-import kategory.*
 
 @higherkind
 abstract class Mu<out F> : MuKind<F> {

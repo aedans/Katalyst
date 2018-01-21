@@ -1,6 +1,8 @@
 package io.github.aedans.katalyst
 
-import kategory.*
+import arrow.*
+import arrow.core.*
+import arrow.typeclasses.*
 
 @higherkind
 data class PairKW<out F, out A>(val a: F, val b: A) : PairKWKind<F, A> {
@@ -50,14 +52,14 @@ interface PairKWMonadInstance : Monad<PairKWKindPartial<*>> {
 
 @instance(PairKW::class)
 interface PairKWFoldableInstance : Foldable<PairKWKindPartial<*>> {
-    override fun <A, B> foldL(fa: PairKWKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldR(fa: PairKWKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <A, B> foldLeft(fa: PairKWKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: PairKWKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
 }
 
 @instance(PairKW::class)
 interface PairKWTraverseInstance<F> : Traverse<PairKWKindPartial<F>> {
-    override fun <A, B> foldL(fa: PairKWKind<F, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldR(fa: PairKWKind<F, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <A, B> foldLeft(fa: PairKWKind<F, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: PairKWKind<F, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
     override fun <G, A, B> traverse(fa: PairKWKind<F, A>, f: (A) -> HK<G, B>, GA: Applicative<G>) = fa.ev().traverse(f, GA)
 }
 

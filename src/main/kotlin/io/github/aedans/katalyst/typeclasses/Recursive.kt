@@ -1,9 +1,12 @@
 package io.github.aedans.katalyst.typeclasses
 
+import arrow.*
+import arrow.instances.ComposedFunctor
+import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
-import kategory.*
 
-interface Recursive<T> : Typeclass {
+@typeclass
+interface Recursive<T> : TC {
     fun <F> project(t: HK<T, F>, FF: Functor<F>): HK<F, HK<T, F>>
 
     fun <F, A> cata(t: HK<T, F>, alg: Algebra<F, A>,
@@ -36,5 +39,3 @@ interface Recursive<T> : Typeclass {
             para(t, { MM.flatMap(TF.sequence(MM, TF.map(it) { PairKW.traverse<HK<T, F>>().sequence(MM, it) }), gAlg) },
                     TF)
 }
-
-inline fun <reified F> recursive(): Recursive<F> = instance(InstanceParametrizedType(Recursive::class.java, listOf(typeLiteral<F>())))

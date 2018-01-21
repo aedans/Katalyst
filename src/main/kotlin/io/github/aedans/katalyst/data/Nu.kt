@@ -1,8 +1,9 @@
 package io.github.aedans.katalyst.data
 
+import arrow.*
+import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.typeclasses.*
-import kategory.*
 
 @higherkind
 class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {

@@ -1,5 +1,5 @@
 group 'io.github.aedans'
-version '0.5.0'
+version '0.6.0'
 
 buildscript {
     ext.kotlin_version = '1.2.10'
@@ -32,13 +32,19 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile 'io.kategory:kategory:0.3.11'
-    kapt    'io.kategory:kategory-annotations-processor:0.3.11'
-    kaptTest    'io.kategory:kategory-annotations-processor:0.3.11'
-    testCompile 'io.kotlintest:kotlintest:2.0.7'
-    testCompile 'io.kategory:kategory:0.3.11'
-    testCompile 'io.kategory:kategory-test:0.3.11'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
+    def arrow_version = '0.5.5'
+    compile "io.arrow-kt:arrow-core:$arrow_version"
+    compile "io.arrow-kt:arrow-typeclasses:$arrow_version"
+    compile "io.arrow-kt:arrow-instances:$arrow_version"
+    compile "io.arrow-kt:arrow-free:$arrow_version"
+    kapt    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
+    testCompile "io.arrow-kt:arrow-core:$arrow_version"
+    testCompile "io.arrow-kt:arrow-typeclasses:$arrow_version"
+    testCompile "io.arrow-kt:arrow-instances:$arrow_version"
+    testCompile "io.arrow-kt:arrow-test:$arrow_version"
+    kaptTest    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

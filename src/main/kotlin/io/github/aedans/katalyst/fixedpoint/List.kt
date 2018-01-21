@@ -1,9 +1,11 @@
 package io.github.aedans.katalyst.fixedpoint
 
+import arrow.*
+import arrow.core.*
+import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.fixedpoint.ListF.Companion.nil
 import io.github.aedans.katalyst.syntax.*
-import kategory.*
 
 @higherkind
 data class ListF<out F, out A>(val value: Option<PairKW<F, A>>) : ListFKind<F, A> {
@@ -14,8 +16,8 @@ data class ListF<out F, out A>(val value: Option<PairKW<F, A>>) : ListFKind<F, A
     fun <B> foldR(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = value.fold({ lb }, { f(it.b, lb) })
 
     companion object {
-        val nil = ListF<Nothing, Nothing>(Option.None)
-        fun <F, A> cons(head: F, tail: A) = ListF(Option.Some(head toKW tail))
+        val nil = ListF<Nothing, Nothing>(None)
+        fun <F, A> cons(head: F, tail: A) = ListF(Some(head toKW tail))
         fun <A> pure(a: A) = cons(null, a)
     }
 }
@@ -46,9 +48,9 @@ interface ListFMonadInstance : Monad<ListFKindPartial<*>> {
     override tailrec fun <A, B> tailRecM(a: A, f: (A) -> ListFKind<*, Either<A, B>>): ListF<*, B> {
         val value = f(a).ev().value
         return when (value) {
-            Option.None -> nil
-            is Option.Some -> {
-                val b = value.value.b
+            None -> nil
+            is Some -> {
+                val b = value.t.b
                 when (b) {
                     is Either.Left -> tailRecM(b.a, f)
                     is Either.Right -> ListF.pure(b.b)
@@ -60,14 +62,14 @@ interface ListFMonadInstance : Monad<ListFKindPartial<*>> {
 
 @instance(ListF::class)
 interface ListFFoldableInstance : Foldable<ListFKindPartial<*>> {
-    override fun <A, B> foldL(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldR(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <A, B> foldLeft(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
 }
 
 @instance(ListF::class)
 interface ListFTraverseInstance : Traverse<ListFKindPartial<*>> {
-    override fun <A, B> foldL(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldR(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <A, B> foldLeft(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
     override fun <G, A, B> traverse(fa: ListFKind<*, A>, f: (A) -> HK<G, B>, GA: Applicative<G>): HK<G, ListFKind<*, B>> =
             fa.ev().value.fold({ GA.pure(ListF.nil) }, { GA.map(f(it.b), ListF.Companion::pure) })
 }

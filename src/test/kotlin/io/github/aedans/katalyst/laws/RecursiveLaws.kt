@@ -1,10 +1,11 @@
 package io.github.aedans.katalyst.laws
 
+import arrow.core.*
+import arrow.test.laws.Law
 import io.github.aedans.katalyst.Algebras
 import io.github.aedans.katalyst.fixedpoint.*
 import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.forAll
-import kategory.*
 
 object RecursiveLaws {
     inline fun <reified T> laws(): List<Law> = listOf(

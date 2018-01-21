@@ -1,9 +1,13 @@
 package io.github.aedans.katalyst.typeclasses
 
+import arrow.*
+import arrow.core.*
+import arrow.instances.*
+import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
-import kategory.*
 
-interface Corecursive<T> : Typeclass {
+@typeclass
+interface Corecursive<T> : TC {
     fun <F> embed(t: HK<F, HK<T, F>>, FF: Functor<F>): HK<T, F>
 
     fun <F, A> ana(a: A, coalg: Coalgebra<F, A>,
@@ -36,5 +40,3 @@ interface Corecursive<T> : Typeclass {
             hyloM(a, { MM.pure(embed(TF.map(TF.map(it.unnest()) { it.ev() }) { it.merge() }, TF)) }, { MM.map(gCoalgM(it)) { it.nest() } },
                     ComposedTraverse(TF, Either.traverse<HK<T, F>>(), Either.applicative()), MM)
 }
-
-inline fun <reified F> corecursive(): Corecursive<F> = instance(InstanceParametrizedType(Corecursive::class.java, listOf(typeLiteral<F>())))

@@ -1,6 +1,6 @@
 package io.github.aedans.katalyst
 
-import kategory.HK
+import arrow.HK
 
 @Suppress("FunctionName")
 object Algebras {

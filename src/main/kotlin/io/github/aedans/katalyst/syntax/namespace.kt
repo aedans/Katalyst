@@ -1,8 +1,10 @@
 package io.github.aedans.katalyst.syntax
 
+import arrow.HK
+import arrow.core.EitherKindPartial
+import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.typeclasses.*
-import kategory.*
 
 // cata
 

@@ -1,10 +1,12 @@
 package io.github.aedans.katalyst.laws
 
+import arrow.core.*
+import arrow.syntax.either.*
+import arrow.test.laws.Law
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.fixedpoint.*
 import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.forAll
-import kategory.*
 
 object CorecursiveLaws {
     inline fun <reified T> laws(): List<Law> = listOf(
@@ -18,14 +20,14 @@ object CorecursiveLaws {
             Law("Corecursive Laws: ana == gana Id") {
                 forAll(intGen) {
                     val ana: NatR<T> = it.ana(coalg = Algebras.toNatR())
-                    val gana: NatR<T> = it.gana { if (it == 0) Option.None else Option.Some(Id.pure(it - 1)) }
+                    val gana: NatR<T> = it.gana { if (it == 0) None else Some(Id.pure(it - 1)) }
                     ana.int() == gana.int()
                 }
             },
             Law("Corecursive Laws: ana == ganaM Id Id") {
                 forAll(intGen) {
                     val ana: NatR<T> = it.ana(coalg = Algebras.toNatR())
-                    val gana: IdKind<NatR<T>> = it.ganaM { Id.pure(if (it == 0) Option.None else Option.Some(Id.pure(it - 1))) }
+                    val gana: IdKind<NatR<T>> = it.ganaM { Id.pure(if (it == 0) None else Some(Id.pure(it - 1))) }
                     ana.int() == gana.value().int()
                 }
             },
@@ -33,9 +35,9 @@ object CorecursiveLaws {
                 forAll(intGen) {
                     val gCoalg: GCoalgebra<EitherKindPartial<NatR<T>>, OptionHK, Int> = {
                         when {
-                            it == 0 -> Option.None
-                            it % 2 == 0 -> Option.Some(1.natR<T>().left())
-                            else -> Option.Some((it - 1).right())
+                            it == 0 -> None
+                            it % 2 == 0 -> Some(1.natR<T>().left())
+                            else -> Some((it - 1).right())
                         }
                     }
 

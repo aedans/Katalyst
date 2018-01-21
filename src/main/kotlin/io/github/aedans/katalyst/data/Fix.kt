@@ -1,7 +1,8 @@
 package io.github.aedans.katalyst.data
 
+import arrow.*
+import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.typeclasses.*
-import kategory.*
 
 @higherkind
 data class Fix<out A>(val unfix: HK<A, FixKind<A>>) : FixKind<A> {

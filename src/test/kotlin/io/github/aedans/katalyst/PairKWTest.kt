@@ -1,7 +1,8 @@
 package io.github.aedans.katalyst
 
-import kategory.*
-import kategory.laws.EqLaws
+import arrow.test.UnitSpec
+import arrow.test.laws.*
+import arrow.typeclasses.Eq
 
 class PairKWTest : UnitSpec() {
     init {
