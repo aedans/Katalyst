@@ -4,17 +4,17 @@ import arrow.*
 import arrow.test.UnitSpec
 import arrow.test.laws.FunctorLaws
 import arrow.typeclasses.*
-import io.github.aedans.katalyst.Algebras
-import io.github.aedans.katalyst.data.Fix
-import io.github.aedans.katalyst.syntax.cata
-import io.kotlintest.properties.*
+import io.github.aedans.katalyst.*
+import io.github.aedans.katalyst.data.*
+import io.github.aedans.katalyst.syntax.*
+import io.kotlintest.matchers.shouldBe
 
 // Define an expression pattern type
 @higherkind
-sealed class ExprP<out A> : ExprPKind<A> {
-    class Int(val value: kotlin.Int) : ExprP<Nothing>()
-    class Neg<out A>(val expr: A) : ExprP<A>()
-    class Plus<out A>(val expr1: A, val expr2: A) : ExprP<A>()
+sealed class ExprP<out A>(val isAtomic: Boolean) : ExprPKind<A> {
+    class Int(val value: kotlin.Int) : ExprP<Nothing>(true)
+    class Neg<out A>(val expr: A) : ExprP<A>(true)
+    class Plus<out A>(val expr1: A, val expr2: A) : ExprP<A>(false)
     companion object
 }
 
@@ -32,7 +32,7 @@ interface ExprPFunctorInstance : Functor<ExprPHK> {
 }
 
 // Expand the expression pattern with a recursive type
-typealias Expr = Fix<ExprPHK>
+typealias Expr = FixKind<ExprPHK>
 
 // Define convenience functions for constructing expressions
 fun int(i: Int) = Fix(ExprP.Int(i))
@@ -50,60 +50,44 @@ fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
 }
 
 // Define an algebra to show an expression
-fun Algebras.showExpr() = Algebra<ExprPHK, String> {
+fun Algebras.showExpr() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value.toString()
-        is ExprP.Neg -> "-${ev.expr}"
-        is ExprP.Plus -> "${ev.expr1} + ${ev.expr2}"
+        is ExprP.Neg -> {
+            val (negated, str) = ev.expr.ev()
+            if (negated.ev().unfix.ev().isAtomic) "-$str" // if the negated expression is atomic, parentheses are redundant
+            else "-($str)"
+        }
+        is ExprP.Plus -> {
+            val (plus1, str1) = ev.expr1.ev()
+            val (plus2, str2) = ev.expr2.ev()
+            val strA = if (plus1.ev().unfix.ev().isAtomic) str1 else "($str1)"
+            val strB = if (plus2.ev().unfix.ev().isAtomic) str2 else "($str2)"
+            "$strA + $strB"
+        }
     }
 }
 
 // Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
-    val expr = plus(int(1), int(2))
-    expr.cata(alg = Algebras.evalExpr()) // 3
-    expr.cata(alg = Algebras.showExpr()) // "1 + 2"
+    val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
+    expr.cata(alg = Algebras.evalExpr()) // -4
+    expr.para(gAlg = Algebras.showExpr()) // (1 + 2) + -(3 + 4)
 }
 
 class ExprTest : UnitSpec() {
     init {
         testLaws(FunctorLaws.laws(ExprP.functor(), { ExprP.Int(it) }, Eq.any()))
 
-        "Int should evaluate to it" {
-            forAll(Gen.int()) {
-                int(it).cata(alg = Algebras.evalExpr()) == it
-            }
+        val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
+
+        "expr.cata(alg = Algebras.evalExpr()) should be -4" {
+            expr.cata(alg = Algebras.evalExpr()) shouldBe -4
         }
 
-        "Int should show it" {
-            forAll(Gen.int()) {
-                int(it).cata(alg = Algebras.showExpr()) == it.toString()
-            }
-        }
-
-        "Neg should evaluate to -it" {
-            forAll(Gen.int()) {
-                neg(int(it)).cata(alg = Algebras.evalExpr()) == -it
-            }
-        }
-
-        "Neg should show -it" {
-            forAll(Gen.int()) {
-                neg(int(it)).cata(alg = Algebras.showExpr()) == "-$it"
-            }
-        }
-
-        "Plus should evaluate to a + b" {
-            forAll(Gen.int(), Gen.int()) { a, b ->
-                plus(int(a), int(b)).cata(alg = Algebras.evalExpr()) == a + b
-            }
-        }
-
-        "Plus should show a + b" {
-            forAll(Gen.int(), Gen.int()) { a, b ->
-                plus(int(a), int(b)).cata(alg = Algebras.showExpr()) == "$a + $b"
-            }
+        "expr.para(gAlg = Algebras.showExpr()) should be 1 + -(2 + 3)" {
+            expr.para(gAlg = Algebras.showExpr()) shouldBe "(1 + 2) + -(3 + 4)"
         }
     }
 }

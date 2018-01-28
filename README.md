@@ -39,10 +39,10 @@ Code sample
 ```kotlin
 // Define an expression pattern type
 @higherkind
-sealed class ExprP<out A> : ExprPKind<A> {
-    class Int(val value: kotlin.Int) : ExprP<Nothing>()
-    class Neg<out A>(val expr: A) : ExprP<A>()
-    class Plus<out A>(val expr1: A, val expr2: A) : ExprP<A>()
+sealed class ExprP<out A>(val isAtomic: Boolean) : ExprPKind<A> {
+    class Int(val value: kotlin.Int) : ExprP<Nothing>(true)
+    class Neg<out A>(val expr: A) : ExprP<A>(true)
+    class Plus<out A>(val expr1: A, val expr2: A) : ExprP<A>(false)
     companion object
 }
 
@@ -60,7 +60,7 @@ interface ExprPFunctorInstance : Functor<ExprPHK> {
 }
 
 // Expand the expression pattern with a recursive type
-typealias Expr = Fix<ExprPHK>
+typealias Expr = FixKind<ExprPHK>
 
 // Define convenience functions for constructing expressions
 fun int(i: Int) = Fix(ExprP.Int(i))
@@ -78,20 +78,30 @@ fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
 }
 
 // Define an algebra to show an expression
-fun Algebras.showExpr() = Algebra<ExprPHK, String> {
+fun Algebras.showExpr() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value.toString()
-        is ExprP.Neg -> "-${ev.expr}"
-        is ExprP.Plus -> "${ev.expr1} + ${ev.expr2}"
+        is ExprP.Neg -> {
+            val (negated, str) = ev.expr.ev()
+            if (negated.ev().unfix.ev().isAtomic) "-$str" // if the negated expression is atomic, parentheses are redundant
+            else "-($str)"
+        }
+        is ExprP.Plus -> {
+            val (plus1, str1) = ev.expr1.ev()
+            val (plus2, str2) = ev.expr2.ev()
+            val strA = if (plus1.ev().unfix.ev().isAtomic) str1 else "($str1)"
+            val strB = if (plus2.ev().unfix.ev().isAtomic) str2 else "($str2)"
+            "$strA + $strB"
+        }
     }
 }
 
 // Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
-    val expr = plus(int(1), int(2))
-    expr.cata(alg = Algebras.evalExpr()) // 3
-    expr.cata(alg = Algebras.showExpr()) // "1 + 2"
+    val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
+    expr.cata(alg = Algebras.evalExpr()) // -4
+    expr.para(gAlg = Algebras.showExpr()) // (1 + 2) + -(3 + 4)
 }
 ```
 
