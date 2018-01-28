@@ -27,7 +27,7 @@ interface Corecursive<T> : TC {
 
     fun <F, N, M, A> ganaM(a: A, dNF: DistributiveLaw<N, F>, gCoalgM: GCoalgebraM<N, M, F, A>,
                            TF: Traverse<F>, MN: Monad<N>, TN: Traverse<N>, MM: Monad<M>): HK<M, HK<T, F>> =
-            ghyloM(a, distributiveLaw(TF, Id.applicative()), dNF, { MM.pure(embed(TF.map(it) { it.ev().value }, TF)) }, gCoalgM,
+            ghyloM(a, distCata(TF), dNF, { MM.pure(embed(TF.map(it) { it.ev().value }, TF)) }, gCoalgM,
                     Id.comonad(), Id.traverse(), MN, TN, MM, TF)
 
     fun <F, A> apo(a: A, gCoalg: GCoalgebra<EitherKindPartial<HK<T, F>>, F, A>,
