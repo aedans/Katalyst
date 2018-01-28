@@ -1,7 +1,6 @@
 package io.github.aedans.katalyst
 
 import arrow.HK
-import arrow.core.FunctionK
 import arrow.free.*
 import arrow.instances.ComposedFunctor
 import arrow.typeclasses.*
@@ -63,6 +62,6 @@ fun <W, N, M, F, A, B> ghyloM(
         MM
 ).let { MM.map(it, CW::extract) }
 
-fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>): DistributiveLaw<F, G> = object : FunctionK<Nested<F, G>, Nested<G, F>> {
+fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>): DistributiveLaw<F, G> = object : DistributiveLaw<F, G> {
     override fun <A> invoke(fa: HK<Nested<F, G>, A>) = TF.sequence(AG, fa.unnest()).nest()
 }
