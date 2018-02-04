@@ -59,13 +59,13 @@ interface Recursive<T> : TC {
     fun <F, A> para(t: HK<T, F>, gAlg: GAlgebra<PairKWKindPartial<HK<T, F>>, F, A>,
                     FF: Functor<F>): A =
             hylo(t, { gAlg(it.unnest()) }, { FF.map(projectT(it, FF), ::square).nest() },
-                    ComposedFunctor<F, PairKWKindPartial<HK<T, F>>>(FF, PairKW.functor()))
+                    ComposedFunctor<F, PairKWKindPartial<HK<T, F>>>(FF, functor()))
 
     /**
      * Para generalized over a monad.
      */
     fun <F, M, A> paraM(t: HK<T, F>, gAlg: GAlgebraM<PairKWKindPartial<HK<T, F>>, M, F, A>,
                         TF: Traverse<F>, MM: Monad<M>): HK<M, A> =
-            para(t, { MM.flatMap(TF.sequence(MM, TF.map(it) { PairKW.traverse<HK<T, F>>().sequence(MM, it) }), gAlg) },
+            para(t, { MM.flatMap(TF.sequence(MM, TF.map(it) { traverse<PairKWKindPartial<HK<T, F>>>().sequence(MM, it) }), gAlg) },
                     TF)
 }

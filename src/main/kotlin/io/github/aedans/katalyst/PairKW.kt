@@ -5,13 +5,13 @@ import arrow.core.*
 import arrow.typeclasses.*
 
 @higherkind
-data class PairKW<out F, out A>(val a: F, val b: A) : PairKWKind<F, A> {
-    fun <B> map(f: (A) -> B) = a toKW f(b)
-    fun <B> ap(f: PairKW<*, (A) -> B>) = map(f.b)
-    fun <B> flatMap(f: (A) -> PairKW<*, B>) = f(b)
-    fun <B> foldL(b: B, f: (B, A) -> B) = f(b, this.b)
-    fun <B> foldR(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = f(b, lb)
-    fun <G, B> traverse(f: (A) -> HK<G, B>, GA: Applicative<G>) = GA.map(f(b), a::toKW)
+data class PairKW<out A, out B>(val a: A, val b: B) : PairKWKind<A, B> {
+    fun <C> map(f: (B) -> C) = a toKW f(b)
+    fun <C> ap(f: PairKW<*, (B) -> C>) = map(f.b)
+    fun <C> flatMap(f: (B) -> PairKW<*, C>) = f(b)
+    fun <C> foldL(b: C, f: (C, B) -> C) = f(b, this.b)
+    fun <C> foldR(lb: Eval<C>, f: (B, Eval<C>) -> Eval<C>) = f(b, lb)
+    fun <G, C> traverse(f: (B) -> HK<G, C>, GA: Applicative<G>) = GA.map(f(b), a::toKW)
 
     companion object {
         fun <A> pure(a: A) = null toKW a
@@ -24,8 +24,8 @@ interface PairKWEqInstance : Eq<PairKWKind<*, *>> {
 }
 
 @instance(PairKW::class)
-interface PairKWFunctorInstance<F> : Functor<PairKWKindPartial<F>> {
-    override fun <A, B> map(fa: PairKWKind<F, A>, f: (A) -> B) = fa.ev().map(f)
+interface PairKWFunctorInstance : Functor<PairKWKindPartial<*>> {
+    override fun <A, B> map(fa: PairKWKind<*, A>, f: (A) -> B) = fa.ev().map(f)
 }
 
 @instance(PairKW::class)
@@ -57,10 +57,10 @@ interface PairKWFoldableInstance : Foldable<PairKWKindPartial<*>> {
 }
 
 @instance(PairKW::class)
-interface PairKWTraverseInstance<F> : Traverse<PairKWKindPartial<F>> {
-    override fun <A, B> foldLeft(fa: PairKWKind<F, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldRight(fa: PairKWKind<F, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
-    override fun <G, A, B> traverse(fa: PairKWKind<F, A>, f: (A) -> HK<G, B>, GA: Applicative<G>) = fa.ev().traverse(f, GA)
+interface PairKWTraverseInstance : Traverse<PairKWKindPartial<*>> {
+    override fun <A, B> foldLeft(fa: PairKWKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: PairKWKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <G, A, B> traverse(fa: PairKWKind<*, A>, f: (A) -> HK<G, B>, GA: Applicative<G>) = fa.ev().traverse(f, GA)
 }
 
 infix fun <A, B> A.toKW(b: B) = PairKW(this, b)
