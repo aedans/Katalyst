@@ -82,11 +82,11 @@ class ExprTest : UnitSpec() {
 
         val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
 
-        "expr.cata(alg = Algebras.evalExpr()) should be -4" {
+        "expr.cata(alg = evalExprAlgebra()) should be -4" {
             expr.cata(alg = evalExprAlgebra()) shouldBe -4
         }
 
-        "expr.para(gAlg = Algebras.showExpr()) should be 1 + -(2 + 3)" {
+        "expr.para(gAlg = showExprAlgebra()) should be 1 + -(2 + 3)" {
             expr.para(gAlg = showExprAlgebra()) shouldBe "(1 + 2) + -(3 + 4)"
         }
     }
