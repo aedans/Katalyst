@@ -6,16 +6,27 @@ import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.syntax.*
 
+/**
+ * Typeclass for types that can be generically folded with algebras.
+ */
 @typeclass
 interface Recursive<T> : TC {
-    fun <F> project(t: HK<T, F>, FF: Functor<F>): HK<F, HK<T, F>>
+    /**
+     * Creates a coalgebra given a functor.
+     */
+    fun <F> project(FF: Functor<F>): Coalgebra<F, HK<T, F>> = { t: HK<T, F> -> projectT(t, FF) }
+
+    /**
+     * Implementation for project.
+     */
+    fun <F> projectT(t: HK<T, F>, FF: Functor<F>): HK<F, HK<T, F>>
 
     /**
      * Fold generalized over any recursive type.
      */
     fun <F, A> cata(t: HK<T, F>, alg: Algebra<F, A>,
                     FF: Functor<F>): A =
-            hylo(t, alg, { project(it, FF) },
+            hylo(t, alg, project(FF),
                     FF)
 
     /**
@@ -47,7 +58,7 @@ interface Recursive<T> : TC {
      */
     fun <F, A> para(t: HK<T, F>, gAlg: GAlgebra<PairKWKindPartial<HK<T, F>>, F, A>,
                     FF: Functor<F>): A =
-            hylo(t, { gAlg(it.unnest()) }, { FF.map(project(it, FF), ::square).nest() },
+            hylo(t, { gAlg(it.unnest()) }, { FF.map(projectT(it, FF), ::square).nest() },
                     ComposedFunctor<F, PairKWKindPartial<HK<T, F>>>(FF, PairKW.functor()))
 
     /**

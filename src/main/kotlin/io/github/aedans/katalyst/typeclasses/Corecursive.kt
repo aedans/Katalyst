@@ -7,16 +7,27 @@ import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.syntax.*
 
+/**
+ * Typeclass for types that can be generically unfolded with coalgebras.
+ */
 @typeclass
 interface Corecursive<T> : TC {
-    fun <F> embed(t: HK<F, HK<T, F>>, FF: Functor<F>): HK<T, F>
+    /**
+     * Creates a algebra given a functor.
+     */
+    fun <F> embed(FF: Functor<F>): Algebra<F, HK<T, F>> = { t: HK<F, HK<T, F>> -> embedT(t, FF) }
+
+    /**
+     * Implementation for embed.
+     */
+    fun <F> embedT(t: HK<F, HK<T, F>>, FF: Functor<F>): HK<T, F>
 
     /**
      * Unfold into any recursive type.
      */
     fun <F, A> ana(a: A, coalg: Coalgebra<F, A>,
                    FF: Functor<F>): HK<T, F> =
-            hylo(a, { embed(it, FF) }, coalg,
+            hylo(a, embed(FF), coalg,
                     FF)
 
     /**
@@ -24,7 +35,7 @@ interface Corecursive<T> : TC {
      */
     fun <F, M, A> anaM(a: A, coalgM: CoalgebraM<M, F, A>,
                        TF: Traverse<F>, MM: Monad<M>): HK<M, HK<T, F>> =
-            hyloM(a, { MM.pure(embed(it, TF)) }, coalgM,
+            hyloM(a, { MM.pure(embedT(it, TF)) }, coalgM,
                     TF, MM)
 
     /**
@@ -40,7 +51,7 @@ interface Corecursive<T> : TC {
      */
     fun <F, N, M, A> ganaM(a: A, dNF: DistributiveLaw<N, F>, gCoalgM: GCoalgebraM<N, M, F, A>,
                            TF: Traverse<F>, MN: Monad<N>, TN: Traverse<N>, MM: Monad<M>): HK<M, HK<T, F>> =
-            ghyloM(a, distCata(TF), dNF, { MM.pure(embed(TF.map(it) { it.ev().value }, TF)) }, gCoalgM,
+            ghyloM(a, distCata(TF), dNF, { MM.pure(embedT(TF.map(it) { it.ev().value }, TF)) }, gCoalgM,
                     Id.comonad(), Id.traverse(), MN, TN, MM, TF)
 
     /**
@@ -48,7 +59,7 @@ interface Corecursive<T> : TC {
      */
     fun <F, A> apo(a: A, gCoalg: GCoalgebra<EitherKindPartial<HK<T, F>>, F, A>,
                    FF: Functor<F>): HK<T, F> =
-            hylo(a, { embed(FF.map(it.unnest()) { it.ev().merge() }, FF) }, { gCoalg(it).nest() },
+            hylo(a, { embedT(FF.map(it.unnest()) { it.ev().merge() }, FF) }, { gCoalg(it).nest() },
                     ComposedFunctor(FF, Either.functor<HK<T, F>>()))
 
     /**
@@ -56,6 +67,6 @@ interface Corecursive<T> : TC {
      */
     fun <F, M, A> apoM(a: A, gCoalgM: GCoalgebraM<EitherKindPartial<HK<T, F>>, M, F, A>,
                        TF: Traverse<F>, MM: Monad<M>): HK<M, HK<T, F>> =
-            hyloM(a, { MM.pure(embed(TF.map(TF.map(it.unnest()) { it.ev() }) { it.merge() }, TF)) }, { MM.map(gCoalgM(it)) { it.nest() } },
+            hyloM(a, { MM.pure(embedT(TF.map(TF.map(it.unnest()) { it.ev() }) { it.merge() }, TF)) }, { MM.map(gCoalgM(it)) { it.nest() } },
                     ComposedTraverse(TF, Either.traverse<HK<T, F>>(), Either.applicative()), MM)
 }
