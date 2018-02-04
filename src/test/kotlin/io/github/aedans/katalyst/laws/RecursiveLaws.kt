@@ -2,7 +2,7 @@ package io.github.aedans.katalyst.laws
 
 import arrow.core.*
 import arrow.test.laws.Law
-import io.github.aedans.katalyst.fixedpoint.*
+import io.github.aedans.katalyst.fixedpoint.fromNatRAlgebra
 import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.forAll
 
@@ -31,9 +31,16 @@ object RecursiveLaws {
             },
             Law("Recursive Laws: para == paraM Id") {
                 forAll(natGen<T>()) {
-                    val para: Int = it.para(gAlg = factorialAlgebra())
-                    val paraM: IdKind<Int> = it.paraM { Id.pure(factorialAlgebra<T>()(it)) }
+                    val para: Int = it.para(gAlg = paraFactorialAlgebra())
+                    val paraM: IdKind<Int> = it.paraM { Id.pure(paraFactorialAlgebra<T>()(it)) }
                     para == paraM.value()
+                }
+            },
+            Law("Recursive Laws: histo == ghisto Id") {
+                forAll(natGen<T>()) {
+                    val histo: Int = it.histo(gAlg = histoFromNatRAlgebra())
+                    val histoM: Int = it.ghisto(gAlg = histoFromNatRAlgebra())
+                    histo == histoM
                 }
             }
     )

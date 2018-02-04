@@ -2,6 +2,7 @@ package io.github.aedans.katalyst.syntax
 
 import arrow.HK
 import arrow.core.EitherKindPartial
+import arrow.free.CofreeKindPartial
 import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.typeclasses.*
@@ -53,6 +54,22 @@ inline fun <reified F, reified M, reified T, A> HK<T, F>.paraM(
         MM: Monad<M> = monad(),
         noinline gAlgM: GAlgebraM<PairKWKindPartial<HK<T, F>>, M, F, A>
 ) = RT.paraM(this, gAlgM, TF, MM)
+
+// histo
+
+inline fun <reified F, reified T, A> HK<T, F>.histo(
+        RT: Recursive<T> = recursive(),
+        FF: Functor<F> = functor(),
+        noinline gAlg: GAlgebra<CofreeKindPartial<F>, F, A>
+) = RT.histo(this, gAlg, FF)
+
+inline fun <reified F, reified W, reified T, A> HK<T, F>.ghisto(
+        RT: Recursive<T> = recursive(),
+        FF: Functor<F> = functor(),
+        FW: Functor<W> = functor(),
+        dFW: DistributiveLaw<F, W> = distributiveLaw(),
+        noinline gAlg: GAlgebra<CofreeKindPartial<W>, F, A>
+) = RT.ghisto(this, dFW, gAlg, FF, FW)
 
 // ana
 

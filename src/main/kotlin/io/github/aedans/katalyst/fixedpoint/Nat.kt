@@ -2,7 +2,6 @@ package io.github.aedans.katalyst.fixedpoint
 
 import arrow.HK
 import arrow.core.*
-import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.syntax.*
 
 /**
@@ -16,10 +15,6 @@ fun toNatRCoalgebra() = Coalgebra<OptionHK, Int> {
 
 fun fromNatRAlgebra() = Algebra<OptionHK, Int> {
     it.ev().fold({ 0 }, { it + 1 })
-}
-
-inline fun <reified T> factorialAlgebra() = GAlgebra<PairKWKindPartial<NatR<T>>, OptionHK, Int> {
-    it.ev().map { it.ev() }.fold({ 1 }, { (i, n) -> (i.toInt() + 1) * n })
 }
 
 inline fun <reified T> Int.toNatR(): NatR<T> = ana(coalg = toNatRCoalgebra())

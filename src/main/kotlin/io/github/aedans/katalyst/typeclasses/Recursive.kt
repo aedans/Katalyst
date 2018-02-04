@@ -1,6 +1,7 @@
 package io.github.aedans.katalyst.typeclasses
 
 import arrow.*
+import arrow.free.*
 import arrow.instances.ComposedFunctor
 import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
@@ -68,4 +69,18 @@ interface Recursive<T> : TC {
                         TF: Traverse<F>, MM: Monad<M>): HK<M, A> =
             para(t, { MM.flatMap(TF.sequence(MM, TF.map(it) { traverse<PairKWKindPartial<HK<T, F>>>().sequence(MM, it) }), gAlg) },
                     TF)
+
+    /**
+     * Cata that also provides all the previous elements.
+     */
+    fun <F, A> histo(t: HK<T, F>, gAlg: GAlgebra<CofreeKindPartial<F>, F, A>,
+                     FF: Functor<F>): A =
+            gcata(t, distHisto(FF), gAlg, FF, Cofree.comonad())
+
+    /**
+     * Histo generalized over a comonad.
+     */
+    fun <F, W, A> ghisto(t: HK<T, F>, dFW: DistributiveLaw<F, W>, gAlg: GAlgebra<CofreeKindPartial<W>, F, A>,
+                         FF: Functor<F>, FW: Functor<W>): A =
+            gcata(t, distGHisto(dFW, FF, FW), gAlg, FF, Cofree.comonad())
 }
