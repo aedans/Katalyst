@@ -40,7 +40,7 @@ fun neg(e: Expr) = Fix(ExprP.Neg(e))
 fun plus(a: Expr, b: Expr) = Fix(ExprP.Plus(a, b))
 
 // Define an algebra to evaluate an expression
-fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
+fun evalExprAlgebra() = Algebra<ExprPHK, Int> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value
@@ -50,7 +50,7 @@ fun Algebras.evalExpr() = Algebra<ExprPHK, Int> {
 }
 
 // Define an algebra to show an expression
-fun Algebras.showExpr() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
+fun showExprAlgebra() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
     val ev = it.ev()
     when (ev) {
         is ExprP.Int -> ev.value.toString()
@@ -72,8 +72,8 @@ fun Algebras.showExpr() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
 // Use recursion schemes to generically apply algebras
 fun main(args: Array<String>) {
     val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
-    expr.cata(alg = Algebras.evalExpr()) // -4
-    expr.para(gAlg = Algebras.showExpr()) // (1 + 2) + -(3 + 4)
+    expr.cata(alg = evalExprAlgebra()) // -4
+    expr.para(gAlg = showExprAlgebra()) // (1 + 2) + -(3 + 4)
 }
 
 class ExprTest : UnitSpec() {
@@ -83,11 +83,11 @@ class ExprTest : UnitSpec() {
         val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
 
         "expr.cata(alg = Algebras.evalExpr()) should be -4" {
-            expr.cata(alg = Algebras.evalExpr()) shouldBe -4
+            expr.cata(alg = evalExprAlgebra()) shouldBe -4
         }
 
         "expr.para(gAlg = Algebras.showExpr()) should be 1 + -(2 + 3)" {
-            expr.para(gAlg = Algebras.showExpr()) shouldBe "(1 + 2) + -(3 + 4)"
+            expr.para(gAlg = showExprAlgebra()) shouldBe "(1 + 2) + -(3 + 4)"
         }
     }
 }

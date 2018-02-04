@@ -4,8 +4,11 @@ import arrow.HK
 import arrow.free.*
 import arrow.instances.ComposedFunctor
 import arrow.typeclasses.*
+import io.github.aedans.katalyst.syntax.*
 
-// TODO stack safe
+/**
+ * The composition of cata and ana.
+ */
 fun <F, A, B> hylo(
         a: A,
         alg: Algebra<F, B>,
@@ -13,6 +16,9 @@ fun <F, A, B> hylo(
         FF: Functor<F>
 ): B = alg(FF.map(coalg(a)) { hylo(it, alg, coalg, FF) })
 
+/**
+ * Hylo generalized over a monad.
+ */
 fun <M, F, A, B> hyloM(
         a: A,
         algM: AlgebraM<M, F, B>,
@@ -26,6 +32,9 @@ fun <M, F, A, B> hyloM(
         ComposedFunctor(MM, TF)
 )
 
+/**
+ * Hylo generalized over a comonad.
+ */
 fun <W, N, F, A, B> ghylo(
         a: A,
         dFW: DistributiveLaw<F, W>,
@@ -42,6 +51,9 @@ fun <W, N, F, A, B> ghylo(
         Yoneda.functor()
 ).let(CW::extract)
 
+/**
+ * Hylo generalized over a monad and a comonad.
+ */
 fun <W, N, M, F, A, B> ghyloM(
         a: A,
         dFW: DistributiveLaw<F, W>,
@@ -61,7 +73,3 @@ fun <W, N, M, F, A, B> ghyloM(
         TF,
         MM
 ).let { MM.map(it, CW::extract) }
-
-fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>): DistributiveLaw<F, G> = object : DistributiveLaw<F, G> {
-    override fun <A> invoke(fa: HK<Nested<F, G>, A>) = TF.sequence(AG, fa.unnest()).nest()
-}

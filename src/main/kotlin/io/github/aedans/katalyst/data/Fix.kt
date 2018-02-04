@@ -4,6 +4,10 @@ import arrow.*
 import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.typeclasses.*
 
+/**
+ * Type level combinator for obtaining the fixed point of a type.
+ * This type is the type level encoding of primitive recursion.
+ */
 @higherkind
 data class Fix<out A>(val unfix: HK<A, FixKind<A>>) : FixKind<A> {
     companion object

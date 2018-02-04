@@ -2,9 +2,13 @@ package io.github.aedans.katalyst.data
 
 import arrow.*
 import arrow.typeclasses.Functor
-import io.github.aedans.katalyst.Coalgebra
+import io.github.aedans.katalyst.syntax.Coalgebra
 import io.github.aedans.katalyst.typeclasses.*
 
+/**
+ * Type level combinator for obtaining the greatest fixed point of a type.
+ * This type is the type level encoding of ana.
+ */
 @higherkind
 class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {
     companion object {

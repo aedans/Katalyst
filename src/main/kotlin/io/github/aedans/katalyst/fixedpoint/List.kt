@@ -4,85 +4,91 @@ import arrow.*
 import arrow.core.*
 import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
-import io.github.aedans.katalyst.fixedpoint.ListF.Companion.nil
+import io.github.aedans.katalyst.fixedpoint.AndMaybe.Companion.empty
 import io.github.aedans.katalyst.syntax.*
 
+/**
+ * The pattern functor for a linked list.
+ */
 @higherkind
-data class ListF<out F, out A>(val value: Option<PairKW<F, A>>) : ListFKind<F, A> {
-    fun <B> map(f: (A) -> B): ListF<F, B> = ListF(value.map { it.map(f) })
-    fun <B> ap(ff: ListF<*, (A) -> B>) = ff.value.fold({ nil }, { map(it.b) })
-    fun <B> flatMap(f: (A) -> ListF<*, B>) = value.fold({ nil }, { f(it.b) })
+data class AndMaybe<out F, out A>(val value: Option<PairKW<F, A>>) : AndMaybeKind<F, A> {
+    fun <B> map(f: (A) -> B): AndMaybe<F, B> = AndMaybe(value.map { it.map(f) })
+    fun <B> ap(ff: AndMaybe<*, (A) -> B>) = ff.value.fold({ empty }, { map(it.b) })
+    fun <B> flatMap(f: (A) -> AndMaybe<*, B>) = value.fold({ empty }, { f(it.b) })
     fun <B> foldL(b: B, f: (B, A) -> B) = value.fold({ b }, { f(b, it.b) })
     fun <B> foldR(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = value.fold({ lb }, { f(it.b, lb) })
 
     companion object {
-        val nil = ListF<Nothing, Nothing>(None)
-        fun <F, A> cons(head: F, tail: A) = ListF(Some(head toKW tail))
+        val empty = AndMaybe<Nothing, Nothing>(None)
+        fun <F, A> cons(head: F, tail: A) = AndMaybe(Some(head toKW tail))
         fun <A> pure(a: A) = cons(null, a)
     }
 }
 
-@instance(ListF::class)
-interface ListFEqInstance : Eq<ListFKind<*, *>> {
-    override fun eqv(a: ListFKind<*, *>, b: ListFKind<*, *>) = a.ev() == b.ev()
+@instance(AndMaybe::class)
+interface AndMaybeEqInstance : Eq<AndMaybeKind<*, *>> {
+    override fun eqv(a: AndMaybeKind<*, *>, b: AndMaybeKind<*, *>) = a.ev() == b.ev()
 }
 
-@instance(ListF::class)
-interface ListFFunctorInstance : Functor<ListFKindPartial<*>> {
-    override fun <A, B> map(fa: ListFKind<*, A>, f: (A) -> B) = fa.ev().map(f)
+@instance(AndMaybe::class)
+interface AndMaybeFunctorInstance : Functor<AndMaybeKindPartial<*>> {
+    override fun <A, B> map(fa: AndMaybeKind<*, A>, f: (A) -> B) = fa.ev().map(f)
 }
 
-@instance(ListF::class)
-interface ListFApplicativeInstance : Applicative<ListFKindPartial<*>> {
-    override fun <A, B> ap(fa: ListFKind<*, A>, ff: ListFKind<*, (A) -> B>) = fa.ev().ap(ff.ev())
-    override fun <A, B> map(fa: ListFKind<*, A>, f: (A) -> B) = fa.ev().map(f)
-    override fun <A> pure(a: A) = ListF.pure(a)
+@instance(AndMaybe::class)
+interface AndMaybeApplicativeInstance : Applicative<AndMaybeKindPartial<*>> {
+    override fun <A, B> ap(fa: AndMaybeKind<*, A>, ff: AndMaybeKind<*, (A) -> B>) = fa.ev().ap(ff.ev())
+    override fun <A, B> map(fa: AndMaybeKind<*, A>, f: (A) -> B) = fa.ev().map(f)
+    override fun <A> pure(a: A) = AndMaybe.pure(a)
 }
 
-@instance(ListF::class)
-interface ListFMonadInstance : Monad<ListFKindPartial<*>> {
-    override fun <A, B> map(fa: ListFKind<*, A>, f: (A) -> B) = fa.ev().map(f)
-    override fun <A, B> ap(fa: ListFKind<*, A>, ff: ListFKind<*, (A) -> B>) = fa.ev().ap(ff.ev())
-    override fun <A> pure(a: A) = ListF.pure(a)
-    override fun <A, B> flatMap(fa: ListFKind<*, A>, f: (A) -> ListFKind<*, B>) = fa.ev().flatMap { f(it).ev() }
-    override tailrec fun <A, B> tailRecM(a: A, f: (A) -> ListFKind<*, Either<A, B>>): ListF<*, B> {
+@instance(AndMaybe::class)
+interface AndMaybeMonadInstance : Monad<AndMaybeKindPartial<*>> {
+    override fun <A, B> map(fa: AndMaybeKind<*, A>, f: (A) -> B) = fa.ev().map(f)
+    override fun <A, B> ap(fa: AndMaybeKind<*, A>, ff: AndMaybeKind<*, (A) -> B>) = fa.ev().ap(ff.ev())
+    override fun <A> pure(a: A) = AndMaybe.pure(a)
+    override fun <A, B> flatMap(fa: AndMaybeKind<*, A>, f: (A) -> AndMaybeKind<*, B>) = fa.ev().flatMap { f(it).ev() }
+    override tailrec fun <A, B> tailRecM(a: A, f: (A) -> AndMaybeKind<*, Either<A, B>>): AndMaybe<*, B> {
         val value = f(a).ev().value
         return when (value) {
-            None -> nil
+            None -> empty
             is Some -> {
                 val b = value.t.b
                 when (b) {
                     is Either.Left -> tailRecM(b.a, f)
-                    is Either.Right -> ListF.pure(b.b)
+                    is Either.Right -> AndMaybe.pure(b.b)
                 }
             }
         }
     }
 }
 
-@instance(ListF::class)
-interface ListFFoldableInstance : Foldable<ListFKindPartial<*>> {
-    override fun <A, B> foldLeft(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldRight(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+@instance(AndMaybe::class)
+interface AndMaybeFoldableInstance : Foldable<AndMaybeKindPartial<*>> {
+    override fun <A, B> foldLeft(fa: AndMaybeKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: AndMaybeKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
 }
 
-@instance(ListF::class)
-interface ListFTraverseInstance : Traverse<ListFKindPartial<*>> {
-    override fun <A, B> foldLeft(fa: ListFKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
-    override fun <A, B> foldRight(fa: ListFKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
-    override fun <G, A, B> traverse(fa: ListFKind<*, A>, f: (A) -> HK<G, B>, GA: Applicative<G>): HK<G, ListFKind<*, B>> =
-            fa.ev().value.fold({ GA.pure(ListF.nil) }, { GA.map(f(it.b), ListF.Companion::pure) })
+@instance(AndMaybe::class)
+interface AndMaybeTraverseInstance : Traverse<AndMaybeKindPartial<*>> {
+    override fun <A, B> foldLeft(fa: AndMaybeKind<*, A>, b: B, f: (B, A) -> B) = fa.ev().foldL(b, f)
+    override fun <A, B> foldRight(fa: AndMaybeKind<*, A>, lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>) = fa.ev().foldR(lb, f)
+    override fun <G, A, B> traverse(fa: AndMaybeKind<*, A>, f: (A) -> HK<G, B>, GA: Applicative<G>): HK<G, AndMaybeKind<*, B>> =
+            fa.ev().value.fold({ GA.pure(AndMaybe.empty) }, { GA.map(f(it.b), AndMaybe.Companion::pure) })
 }
 
-typealias ListR<T, A> = HK<T, ListFKindPartial<A>>
+/**
+ * Recursive list parameterized by a recursive type combinator.
+ */
+typealias ListR<T, A> = HK<T, AndMaybeKindPartial<A>>
 
-fun <A> Algebras.toListR() = Coalgebra<ListFKindPartial<A>, List<A>> {
-    if (it.isEmpty()) ListF.nil else ListF.cons(it.first(), it.drop(1))
+fun <A> toListRCoalgebra() = Coalgebra<AndMaybeKindPartial<A>, List<A>> {
+    if (it.isEmpty()) AndMaybe.empty else AndMaybe.cons(it.first(), it.drop(1))
 }
 
-fun <A> Algebras.fromListR() = Algebra<ListFKindPartial<A>, List<A>> {
+fun <A> fromListRAlgebra() = Algebra<AndMaybeKindPartial<A>, List<A>> {
     it.ev().value.fold({ emptyList() }, { listOf(it.a) + it.b })
 }
 
-inline fun <reified T, A> List<A>.listR(): ListR<T, A> = ana(coalg = Algebras.toListR())
-inline fun <reified T, A> ListR<T, A>.list(): List<A> = cata(alg = Algebras.fromListR())
+inline fun <reified T, A> List<A>.toListR(): ListR<T, A> = ana(coalg = toListRCoalgebra())
+inline fun <reified T, A> ListR<T, A>.toList(): List<A> = cata(alg = fromListRAlgebra())

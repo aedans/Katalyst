@@ -2,9 +2,13 @@ package io.github.aedans.katalyst.data
 
 import arrow.*
 import arrow.typeclasses.Functor
-import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.syntax.Algebra
 import io.github.aedans.katalyst.typeclasses.*
 
+/**
+ * Type level combinator for obtaining the least fixed point of a type.
+ * This type is the type level encoding of cata.
+ */
 @higherkind
 abstract class Mu<out F> : MuKind<F> {
     abstract fun <A> unMu(fa: Algebra<F, A>): A
