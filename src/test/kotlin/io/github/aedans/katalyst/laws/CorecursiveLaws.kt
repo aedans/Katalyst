@@ -11,37 +11,37 @@ object CorecursiveLaws {
     inline fun <reified T> laws(): List<Law> = listOf(
             Law("Corecursive Laws: ana == anaM Id") {
                 forAll(intGen) {
-                    val ana: NatR<T> = it.ana(coalg = toNatRCoalgebra())
-                    val anaM: IdKind<NatR<T>> = it.anaM { Id.pure(toNatRCoalgebra()(it)) }
+                    val ana: GNat<T> = it.ana(coalg = toGNatCoalgebra())
+                    val anaM: IdKind<GNat<T>> = it.anaM { Id.pure(toGNatCoalgebra()(it)) }
                     ana.toInt() == anaM.ev().value.toInt()
                 }
             },
             Law("Corecursive Laws: ana == gana Id") {
                 forAll(intGen) {
-                    val ana: NatR<T> = it.ana(coalg = toNatRCoalgebra())
-                    val gana: NatR<T> = it.gana { if (it == 0) None else Some(Id.pure(it - 1)) }
+                    val ana: GNat<T> = it.ana(coalg = toGNatCoalgebra())
+                    val gana: GNat<T> = it.gana { if (it == 0) None else Some(Id.pure(it - 1)) }
                     ana.toInt() == gana.toInt()
                 }
             },
             Law("Corecursive Laws: ana == ganaM Id Id") {
                 forAll(intGen) {
-                    val ana: NatR<T> = it.ana(coalg = toNatRCoalgebra())
-                    val gana: IdKind<NatR<T>> = it.ganaM { Id.pure(if (it == 0) None else Some(Id.pure(it - 1))) }
+                    val ana: GNat<T> = it.ana(coalg = toGNatCoalgebra())
+                    val gana: IdKind<GNat<T>> = it.ganaM { Id.pure(if (it == 0) None else Some(Id.pure(it - 1))) }
                     ana.toInt() == gana.value().toInt()
                 }
             },
             Law("Corecursive Laws: apo == apoM Id") {
                 forAll(intGen) {
-                    val gCoalg: GCoalgebra<EitherKindPartial<NatR<T>>, OptionHK, Int> = {
+                    val gCoalg: GCoalgebra<EitherKindPartial<GNat<T>>, OptionHK, Int> = {
                         when {
                             it == 0 -> None
-                            it % 2 == 0 -> Some(1.toNatR<T>().left())
+                            it % 2 == 0 -> Some(1.toGNat<T>().left())
                             else -> Some((it - 1).right())
                         }
                     }
 
-                    val apo: NatR<T> = it.apo(gCoalg = gCoalg)
-                    val apoM: IdKind<NatR<T>> = it.apoM { Id.pure(gCoalg(it)) }
+                    val apo: GNat<T> = it.apo(gCoalg = gCoalg)
+                    val apoM: IdKind<GNat<T>> = it.apoM { Id.pure(gCoalg(it)) }
                     apo.toInt() == apoM.value().toInt()
                 }
             }
