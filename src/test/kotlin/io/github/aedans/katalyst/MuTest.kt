@@ -6,6 +6,8 @@ import io.github.aedans.katalyst.laws.BirecursiveLaws
 
 class MuTest : UnitSpec() {
     init {
-        testLaws(BirecursiveLaws.laws<MuHK>())
+        testLaws(
+                BirecursiveLaws.laws<MuHK>()
+        )
     }
 }

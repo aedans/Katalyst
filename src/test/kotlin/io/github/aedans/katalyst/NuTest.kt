@@ -6,6 +6,8 @@ import io.github.aedans.katalyst.laws.BirecursiveLaws
 
 class NuTest : UnitSpec() {
     init {
-        testLaws(BirecursiveLaws.laws<NuHK>())
+        testLaws(
+                BirecursiveLaws.laws<NuHK>()
+        )
     }
 }
