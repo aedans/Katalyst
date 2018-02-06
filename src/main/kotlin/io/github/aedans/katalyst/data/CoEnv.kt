@@ -50,6 +50,11 @@ fun <E, W, A, B, G> CoEnv<E, W, A>.traverse(f: (A) -> HK<G, B>, GA: Applicative<
         run.fold({ GA.pure(CoEnv<E, W, B>(Left(it))) }, { GA.map(TW.traverse(it, f, GA)) { CoEnv(Right(it)) } })
 
 @instance(CoEnv::class)
+interface CoEnvEqInstance<E, W, A> : Eq<CoEnvKind<E, W, A>> {
+    override fun eqv(a: CoEnvKind<E, W, A>, b: CoEnvKind<E, W, A>) = a.ev() == b.ev()
+}
+
+@instance(CoEnv::class)
 interface CoEnvFunctorInstance<E, W> : Functor<CoEnvKindPartial<E, W>> {
     fun FW(): Functor<W>
 

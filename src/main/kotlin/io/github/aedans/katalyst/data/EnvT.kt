@@ -33,6 +33,11 @@ fun <E, W, A, B, G> EnvT<E, W, A>.traverse(f: (A) -> HK<G, B>, GA: Applicative<G
         GA.map(TW.traverse(lower, f, GA)) { EnvT(ask toT it) }
 
 @instance(EnvT::class)
+interface EnvTEqInstance<E, W, A> : Eq<EnvTKind<E, W, A>> {
+    override fun eqv(a: EnvTKind<E, W, A>, b: EnvTKind<E, W, A>) = a.ev() == b.ev()
+}
+
+@instance(EnvT::class)
 interface EnvTFunctorInstance<E, W> : Functor<EnvTKindPartial<E, W>> {
     fun FW(): Functor<W>
 
