@@ -14,8 +14,14 @@ data class EnvT<out E, out W, out A>(val run: Tuple2<E, HK<W, A>>) : EnvTKind<E,
     companion object
 }
 
-fun <E, W, A, B> EnvT<E, W, A>.map(fn: (A) -> B, FW: Functor<W>) =
-        EnvT(ask toT FW.map(lower, fn))
+fun <E, W, A, B> EnvT<E, W, A>.map(f: (A) -> B, FW: Functor<W>) =
+        EnvT(ask toT FW.map(lower, f))
+
+fun <E, W, A, B> EnvT<E, W, A>.coflatMap(f: (EnvT<E, W, A>) -> B, FW: Functor<W>) =
+        EnvT(ask toT FW.map(lower) { _ -> f(this) })
+
+fun <E, W, A> EnvT<E, W, A>.extract(CW: Comonad<W>) =
+        CW.extract(lower)
 
 fun <E, W, A, B> EnvT<E, W, A>.foldLeft(b: B, f: (B, A) -> B, FW: Foldable<W>) =
         FW.foldLeft(lower, b, f)
@@ -26,18 +32,24 @@ fun <E, W, A, B> EnvT<E, W, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>
 fun <E, W, A, B, G> EnvT<E, W, A>.traverse(f: (A) -> HK<G, B>, GA: Applicative<G>, TW: Traverse<W>) =
         GA.map(TW.traverse(lower, f, GA)) { EnvT(ask toT it) }
 
-fun <E, W, A, B> EnvT<E, W, A>.coflatMap(f: (EnvT<E, W, A>) -> B, FW: Functor<W>) =
-        EnvT(ask toT FW.map(lower) { _ -> f(this) })
-
-fun <E, W, A> EnvT<E, W, A>.extract(CW: Comonad<W>) =
-        CW.extract(lower)
-
 @instance(EnvT::class)
 interface EnvTFunctorInstance<E, W> : Functor<EnvTKindPartial<E, W>> {
     fun FW(): Functor<W>
 
     override fun <A, B> map(fa: EnvTKind<E, W, A>, f: (A) -> B) =
             fa.ev().map(f, FW())
+}
+
+@instance(EnvT::class)
+interface EnvTComonadInstance<E, W> : EnvTFunctorInstance<E, W>, Comonad<EnvTKindPartial<E, W>> {
+    override fun FW(): Functor<W> = CW()
+    fun CW(): Comonad<W>
+
+    override fun <A, B> coflatMap(fa: EnvTKind<E, W, A>, f: (EnvTKind<E, W, A>) -> B) =
+            fa.ev().coflatMap({ f(it.ev()) }, FW())
+
+    override fun <A> extract(fa: EnvTKind<E, W, A>) =
+            fa.ev().extract(CW())
 }
 
 @instance(EnvT::class)
@@ -64,18 +76,6 @@ interface EnvTTraverseInstance<E, W> : Traverse<EnvTKindPartial<E, W>> {
     override fun <A, B> map(fa: EnvTKind<E, W, A>, f: (A) -> B) =
             fa.ev().map(f, TW())
 
-    override fun <G, A, B> traverse(fa: EnvTKind<E, W, A>, f: (A) -> HK<G, B>, GA: Applicative<G>): HK<G, EnvTKind<E, W, B>> =
+    override fun <G, A, B> traverse(fa: EnvTKind<E, W, A>, f: (A) -> HK<G, B>, GA: Applicative<G>) =
             fa.ev().traverse(f, GA, TW())
-}
-
-@instance(EnvT::class)
-interface EnvTComonadInstance<E, W> : EnvTFunctorInstance<E, W>, Comonad<EnvTKindPartial<E, W>> {
-    override fun FW(): Functor<W> = CW()
-    fun CW(): Comonad<W>
-
-    override fun <A, B> coflatMap(fa: EnvTKind<E, W, A>, f: (EnvTKind<E, W, A>) -> B) =
-            fa.ev().coflatMap({ f(it.ev()) }, FW())
-
-    override fun <A> extract(fa: EnvTKind<E, W, A>) =
-            fa.ev().extract(CW())
 }

@@ -1,15 +1,16 @@
 package io.github.aedans.katalyst
 
-import arrow.core.Id
+import arrow.core.*
 import arrow.test.UnitSpec
 import arrow.test.laws.*
 import arrow.typeclasses.Eq
+import io.github.aedans.katalyst.data.*
 
 class EnvTTest : UnitSpec() {
     init {
         testLaws(
-                TraverseLaws.laws(cf = { Id(it) }),
-                ComonadLaws.laws(cf = { Id(it) }, EQ = Eq.any())
+                TraverseLaws.laws(EnvT.traverse(), EnvT.functor(), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any()),
+                ComonadLaws.laws(EnvT.comonad(), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any())
         )
     }
 }
