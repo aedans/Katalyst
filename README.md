@@ -24,12 +24,12 @@ Features
 - [x] Mu, Nu, and Fix data types
 - [x] Recursive, Corecursive, and Birecursive typeclasses
 - [x] Cata, ana, and hylo recursion schemes
+- [x] EnvT and CoEnv data types
 - [x] List and Nat defined using recursion schemes
 - [x] Kleisli recursion schemes
 - [x] Generalized recursion schemes
 - [ ] Advanced recursion schemes (para, apo, histo, futu, etc.)
 - [ ] Elgot recursion schemes
-- [ ] EnvT and CoEnv data types
 - [ ] Free and Cofree defined using recursion schemes
 - [ ] Recursive and Corecursive instances for Free and Cofree 
 
