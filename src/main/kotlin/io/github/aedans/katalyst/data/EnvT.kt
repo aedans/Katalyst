@@ -1,16 +1,21 @@
 package io.github.aedans.katalyst.data
 
 import arrow.*
-import arrow.core.Eval
+import arrow.core.*
 import arrow.typeclasses.*
 
+/**
+ * The pattern functor for Cofree.
+ */
 @higherkind
-data class EnvT<out E, out W, out A>(val ask: E, val lower: HK<W, A>) : EnvTKind<E, W, A> {
+data class EnvT<out E, out W, out A>(val run: Tuple2<E, HK<W, A>>) : EnvTKind<E, W, A> {
+    val ask get() = run.a
+    val lower get() = run.b
     companion object
 }
 
 fun <E, W, A, B> EnvT<E, W, A>.map(fn: (A) -> B, FW: Functor<W>) =
-        EnvT(ask, FW.map(lower, fn))
+        EnvT(ask toT FW.map(lower, fn))
 
 fun <E, W, A, B> EnvT<E, W, A>.foldLeft(b: B, f: (B, A) -> B, FW: Foldable<W>) =
         FW.foldLeft(lower, b, f)
@@ -19,10 +24,10 @@ fun <E, W, A, B> EnvT<E, W, A>.foldRight(lb: Eval<B>, f: (A, Eval<B>) -> Eval<B>
         FW.foldRight(lower, lb, f)
 
 fun <E, W, A, B, G> EnvT<E, W, A>.traverse(f: (A) -> HK<G, B>, GA: Applicative<G>, TW: Traverse<W>) =
-        GA.map(TW.traverse(lower, f, GA)) { EnvT(ask, it) }
+        GA.map(TW.traverse(lower, f, GA)) { EnvT(ask toT it) }
 
 fun <E, W, A, B> EnvT<E, W, A>.coflatMap(f: (EnvT<E, W, A>) -> B, FW: Functor<W>) =
-        EnvT(ask, FW.map(lower) { _ -> f(this) })
+        EnvT(ask toT FW.map(lower) { _ -> f(this) })
 
 fun <E, W, A> EnvT<E, W, A>.extract(CW: Comonad<W>) =
         CW.extract(lower)
