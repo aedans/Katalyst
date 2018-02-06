@@ -21,14 +21,14 @@ fun <F, A, B> hylo(
  */
 fun <M, F, A, B> hyloM(
         a: A,
-        algM: AlgebraM<M, F, B>,
-        coalgM: CoalgebraM<M, F, A>,
+        alg: AlgebraM<M, F, B>,
+        coalg: CoalgebraM<M, F, A>,
         TF: Traverse<F>,
         MM: Monad<M>
 ): HK<M, B> = hylo(
         a,
-        { MM.flatMap(it.unnest()) { MM.flatMap(TF.sequence(MM, it), algM) } },
-        { coalgM(it).nest() },
+        { MM.flatMap(it.unnest()) { MM.flatMap(TF.sequence(MM, it), alg) } },
+        { coalg(it).nest() },
         ComposedFunctor(MM, TF)
 )
 
@@ -39,15 +39,15 @@ fun <W, N, F, A, B> ghylo(
         a: A,
         dFW: DistributiveLaw<F, W>,
         dNF: DistributiveLaw<N, F>,
-        gAlg: GAlgebra<W, F, B>,
-        gCoalg: GCoalgebra<N, F, A>,
+        alg: GAlgebra<W, F, B>,
+        coalg: GCoalgebra<N, F, A>,
         CW: Comonad<W>,
         MN: Monad<N>,
         FF: Functor<F>
 ): B = hylo<YonedaKindPartial<F>, HK<N, A>, HK<W, B>>(
         MN.pure(a),
-        { CW.map(dFW.invoke(it.ev().map(CW::duplicate).lower()), gAlg) },
-        { Yoneda.apply(FF.map(dNF.invoke(MN.map(it, gCoalg)), MN::flatten), FF) },
+        { CW.map(dFW.invoke(it.ev().map(CW::duplicate).lower()), alg) },
+        { Yoneda.apply(FF.map(dNF.invoke(MN.map(it, coalg)), MN::flatten), FF) },
         Yoneda.functor()
 ).let(CW::extract)
 
@@ -58,8 +58,8 @@ fun <W, N, M, F, A, B> ghyloM(
         a: A,
         dFW: DistributiveLaw<F, W>,
         dNF: DistributiveLaw<N, F>,
-        gAlgM: GAlgebraM<W, M, F, B>,
-        gCoalgM: GCoalgebraM<N, M, F, A>,
+        alg: GAlgebraM<W, M, F, B>,
+        coalg: GCoalgebraM<N, M, F, A>,
         CW: Comonad<W>,
         TW: Traverse<W>,
         MN: Monad<N>,
@@ -68,8 +68,8 @@ fun <W, N, M, F, A, B> ghyloM(
         TF: Traverse<F>
 ): HK<M, B> = hyloM<M, F, HK<N, A>, HK<W, B>>(
         MN.pure(a),
-        { TW.traverse(dFW.invoke(TF.map(it, CW::duplicate)), gAlgM, MM) },
-        { MM.map(TN.traverse(it, gCoalgM, MM)) { TF.map(dNF.invoke(it), MN::flatten) } },
+        { TW.traverse(dFW.invoke(TF.map(it, CW::duplicate)), alg, MM) },
+        { MM.map(TN.traverse(it, coalg, MM)) { TF.map(dNF.invoke(it), MN::flatten) } },
         TF,
         MM
 ).let { MM.map(it, CW::extract) }
