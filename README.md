@@ -28,10 +28,10 @@ Features
 - [x] List and Nat defined using recursion schemes
 - [x] Kleisli recursion schemes
 - [x] Generalized recursion schemes
-- [ ] Advanced recursion schemes (para, apo, histo, futu, etc.)
+- [x] Advanced recursion schemes (para, apo, histo, futu, etc.)
 - [ ] Elgot recursion schemes
 - [ ] Free and Cofree defined using recursion schemes
-- [ ] Recursive and Corecursive instances for Free and Cofree 
+- [ ] Recursive and Corecursive instances for Free and Cofree
 
 Code sample
 -----------

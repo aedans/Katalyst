@@ -31,15 +31,15 @@ object RecursiveLaws {
             },
             Law("Recursive Laws: para == paraM Id") {
                 forAll(gNatGen<T>()) {
-                    val para: Int = it.para(gAlg = paraFactorialAlgebra())
+                    val para: Int = it.para(alg = paraFactorialAlgebra())
                     val paraM: IdKind<Int> = it.paraM { Id.pure(paraFactorialAlgebra<T>()(it)) }
                     para == paraM.value()
                 }
             },
             Law("Recursive Laws: histo == ghisto Id") {
                 forAll(gNatGen<T>()) {
-                    val histo: Int = it.histo(gAlg = histoFromGNatAlgebra())
-                    val histoM: Int = it.ghisto(gAlg = histoFromGNatAlgebra())
+                    val histo: Int = it.histo(alg = histoFromGNatAlgebra())
+                    val histoM: Int = it.ghisto(alg = histoFromGNatAlgebra())
                     histo == histoM
                 }
             }

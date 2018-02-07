@@ -4,6 +4,9 @@ import arrow.HK
 import arrow.core.*
 import arrow.free.*
 import arrow.typeclasses.*
+import io.github.aedans.katalyst.data.*
+import io.github.aedans.katalyst.fixedpoint.toGFree
+import io.github.aedans.katalyst.syntax.cata
 
 /**
  * A function from F<G<A>> to G<F<A>> i.e. Traverse.sequence.
@@ -47,3 +50,17 @@ fun <F, H> distGHisto(
             },
             FH)
 }
+
+fun <F> distFutu(MF: Monad<F>) =
+        object : DistributiveLaw<FreeKindPartial<F>, F> by distGFutu<F, F>(DistributiveLaw.refl(), MF, MF) { }
+
+fun <F, H> distGFutu(dHF: DistributiveLaw<H, F>, FF: Functor<F>, MH: Monad<H>) =
+        object : DistributiveLaw<FreeKindPartial<H>, F> {
+            override fun <A> invokeK(fa: FreeKind<H, HK<F, A>>): HK<F, FreeKind<H, A>> =
+                    fa.ev().toGFree<MuHK, H, HK<F, A>>(MH).cata {
+                        it.ev().run.fold(
+                                { FF.map(it) { Free.pure<H, A>(it) } },
+                                { FF.map(dHF.invokeK(it)) { Free.monad<H>().flatten(Free.liftF(it)) } }
+                        )
+                    }
+        }

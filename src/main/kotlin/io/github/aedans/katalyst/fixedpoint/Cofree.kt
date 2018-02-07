@@ -3,7 +3,7 @@ package io.github.aedans.katalyst.fixedpoint
 import arrow.HK
 import arrow.core.*
 import arrow.free.Cofree
-import arrow.typeclasses.*
+import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.data.*
 import io.github.aedans.katalyst.syntax.*
 
@@ -28,4 +28,4 @@ fun <S, A> fromGCofreeAlgebra(FS: Functor<S>) = Algebra<CofreePattern<S, A>, Cof
 }
 
 inline fun <reified T, S, A> Cofree<S, A>.toGCofree(): GCofree<T, S, A> = ana(coalg = toGCofreeCoalgebra())
-inline fun <reified T, reified S, A> GCofree<T, S, A>.toCofree(FS: Functor<S> = functor()): Cofree<S, A> = cata(alg = fromGCofreeAlgebra(FS))
+inline fun <reified T, S, A> GCofree<T, S, A>.toCofree(FS: Functor<S>): Cofree<S, A> = cata(alg = fromGCofreeAlgebra(FS))

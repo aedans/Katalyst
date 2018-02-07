@@ -4,7 +4,7 @@ import arrow.core.*
 import arrow.free.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.fixedpoint.*
-import io.github.aedans.katalyst.syntax.GAlgebra
+import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.*
 
 val intGen = Gen.choose(0, 10)
@@ -17,4 +17,8 @@ inline fun <reified T> paraFactorialAlgebra() = GAlgebra<PairKWKindPartial<GNat<
 
 fun histoFromGNatAlgebra() = GAlgebra<CofreeKindPartial<OptionHK>, OptionHK, Int> {
     it.ev().map { it.ev() }.fold({ 0 }, { it.head + 1 })
+}
+
+fun futuToGNatCoalgebra() = GCoalgebra<FreeKindPartial<OptionHK>, OptionHK, Int> { it ->
+    if (it == 0) Option.empty() else Option.pure(Free.pure(it - 1))
 }

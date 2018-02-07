@@ -32,7 +32,7 @@ object CorecursiveLaws {
             },
             Law("Corecursive Laws: apo == apoM Id") {
                 forAll(intGen) {
-                    val gCoalg: GCoalgebra<EitherKindPartial<GNat<T>>, OptionHK, Int> = {
+                    val coalg: GCoalgebra<EitherKindPartial<GNat<T>>, OptionHK, Int> = {
                         when {
                             it == 0 -> None
                             it % 2 == 0 -> Some(1.toGNat<T>().left())
@@ -40,9 +40,16 @@ object CorecursiveLaws {
                         }
                     }
 
-                    val apo: GNat<T> = it.apo(gCoalg = gCoalg)
-                    val apoM: IdKind<GNat<T>> = it.apoM { Id.pure(gCoalg(it)) }
+                    val apo: GNat<T> = it.apo(coalg = coalg)
+                    val apoM: IdKind<GNat<T>> = it.apoM { Id.pure(coalg(it)) }
                     apo.toInt() == apoM.value().toInt()
+                }
+            },
+            Law("Corecursive Laws: futu == futuM Id") {
+                forAll(intGen) {
+                    val futu: GNat<T> = it.futu(coalg = futuToGNatCoalgebra())
+                    val futuM: IdKind<GNat<T>> = it.futuM { Id.pure(futuToGNatCoalgebra()(it)) }
+                    futu.toInt() == futuM.value().toInt()
                 }
             }
     )

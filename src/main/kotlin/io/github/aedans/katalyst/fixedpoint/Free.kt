@@ -4,7 +4,7 @@ import arrow.HK
 import arrow.core.*
 import arrow.free.*
 import arrow.free.Free.Pure
-import arrow.typeclasses.*
+import arrow.typeclasses.Monad
 import io.github.aedans.katalyst.data.*
 import io.github.aedans.katalyst.syntax.*
 
@@ -33,5 +33,5 @@ fun <S, A> fromGFreeAlgebra() = Algebra<FreePattern<S, A>, Free<S, A>> {
     )
 }
 
-inline fun <reified T, reified S, A> Free<S, A>.toGFree(MS: Monad<S> = monad()): GFree<T, S, A> = ana(coalg = toGFreeCoalgebra(MS))
+inline fun <reified T, S, A> Free<S, A>.toGFree(MS: Monad<S>): GFree<T, S, A> = ana(coalg = toGFreeCoalgebra(MS))
 inline fun <reified T, S, A> GFree<T, S, A>.toFree(): Free<S, A> = cata(alg = fromGFreeAlgebra())

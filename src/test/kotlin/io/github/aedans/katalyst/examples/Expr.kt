@@ -73,7 +73,7 @@ fun showExprAlgebra() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
 fun main(args: Array<String>) {
     val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
     expr.cata(alg = evalExprAlgebra()) // -4
-    expr.para(gAlg = showExprAlgebra()) // (1 + 2) + -(3 + 4)
+    expr.para(alg = showExprAlgebra()) // (1 + 2) + -(3 + 4)
 }
 
 class ExprTest : UnitSpec() {
@@ -87,7 +87,7 @@ class ExprTest : UnitSpec() {
         }
 
         "expr.para(gAlg = showExprAlgebra()) should be 1 + -(2 + 3)" {
-            expr.para(gAlg = showExprAlgebra()) shouldBe "(1 + 2) + -(3 + 4)"
+            expr.para(alg = showExprAlgebra()) shouldBe "(1 + 2) + -(3 + 4)"
         }
     }
 }

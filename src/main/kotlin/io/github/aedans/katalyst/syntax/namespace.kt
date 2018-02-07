@@ -2,7 +2,7 @@ package io.github.aedans.katalyst.syntax
 
 import arrow.HK
 import arrow.core.EitherKindPartial
-import arrow.free.CofreeKindPartial
+import arrow.free.*
 import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
 import io.github.aedans.katalyst.typeclasses.*
@@ -19,16 +19,16 @@ inline fun <reified F, reified M, reified T, A> HK<T, F>.cataM(
         RT: Recursive<T> = recursive(),
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
-        noinline algM: AlgebraM<M, F, A>
-) = RT.cataM(this, algM, TF, MM)
+        noinline alg: AlgebraM<M, F, A>
+) = RT.cataM(this, alg, TF, MM)
 
 inline fun <reified F, reified W, reified T, A> HK<T, F>.gcata(
         RT: Recursive<T> = recursive(),
         FF: Functor<F> = functor(),
         CW: Comonad<W> = comonad(),
         dFW: DistributiveLaw<F, W> = distributiveLaw(),
-        noinline gAlg: GAlgebra<W, F, A>
-) = RT.gcata(this, dFW, gAlg, FF, CW)
+        noinline alg: GAlgebra<W, F, A>
+) = RT.gcata(this, dFW, alg, FF, CW)
 
 inline fun <reified F, reified W, reified M, reified T, A> HK<T, F>.gcataM(
         RT: Recursive<T> = recursive(),
@@ -37,39 +37,39 @@ inline fun <reified F, reified W, reified M, reified T, A> HK<T, F>.gcataM(
         MM: Monad<M> = monad(),
         CW: Comonad<W> = comonad(),
         dFW: DistributiveLaw<F, W> = distributiveLaw(),
-        noinline gAlgM: GAlgebraM<W, M, F, A>
-) = RT.gcataM(this, dFW, gAlgM, TF, TW, MM, CW)
+        noinline alg: GAlgebraM<W, M, F, A>
+) = RT.gcataM(this, dFW, alg, TF, TW, MM, CW)
 
 // para
 
 inline fun <reified F, reified T, A> HK<T, F>.para(
         RT: Recursive<T> = recursive(),
         FF: Functor<F> = functor(),
-        noinline gAlg: GAlgebra<PairKWKindPartial<HK<T, F>>, F, A>
-) = RT.para(this, gAlg, FF)
+        noinline alg: GAlgebra<PairKWKindPartial<HK<T, F>>, F, A>
+) = RT.para(this, alg, FF)
 
 inline fun <reified F, reified M, reified T, A> HK<T, F>.paraM(
         RT: Recursive<T> = recursive(),
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
-        noinline gAlgM: GAlgebraM<PairKWKindPartial<HK<T, F>>, M, F, A>
-) = RT.paraM(this, gAlgM, TF, MM)
+        noinline alg: GAlgebraM<PairKWKindPartial<HK<T, F>>, M, F, A>
+) = RT.paraM(this, alg, TF, MM)
 
 // histo
 
 inline fun <reified F, reified T, A> HK<T, F>.histo(
         RT: Recursive<T> = recursive(),
         FF: Functor<F> = functor(),
-        noinline gAlg: GAlgebra<CofreeKindPartial<F>, F, A>
-) = RT.histo(this, gAlg, FF)
+        noinline alg: GAlgebra<CofreeKindPartial<F>, F, A>
+) = RT.histo(this, alg, FF)
 
 inline fun <reified F, reified W, reified T, A> HK<T, F>.ghisto(
         RT: Recursive<T> = recursive(),
         FF: Functor<F> = functor(),
         FW: Functor<W> = functor(),
         dFW: DistributiveLaw<F, W> = distributiveLaw(),
-        noinline gAlg: GAlgebra<CofreeKindPartial<W>, F, A>
-) = RT.ghisto(this, dFW, gAlg, FF, FW)
+        noinline alg: GAlgebra<CofreeKindPartial<W>, F, A>
+) = RT.ghisto(this, dFW, alg, FF, FW)
 
 // ana
 
@@ -83,16 +83,16 @@ inline fun <reified F, reified M, reified T, A> A.anaM(
         CT: Corecursive<T> = corecursive(),
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
-        noinline coalgM: CoalgebraM<M, F, A>
-) = CT.anaM(this, coalgM, TF, MM)
+        noinline coalg: CoalgebraM<M, F, A>
+) = CT.anaM(this, coalg, TF, MM)
 
 inline fun <reified F, reified N, reified T, A> A.gana(
         CT: Corecursive<T> = corecursive(),
         FF: Functor<F> = functor(),
         MN: Monad<N> = monad(),
         dNF: DistributiveLaw<N, F> = distributiveLaw(),
-        noinline gCoalg: GCoalgebra<N, F, A>
-) = CT.gana(this, dNF, gCoalg, FF, MN)
+        noinline coalg: GCoalgebra<N, F, A>
+) = CT.gana(this, dNF, coalg, FF, MN)
 
 inline fun <reified F, reified N, reified M, reified T, A> A.ganaM(
         CT: Corecursive<T> = corecursive(),
@@ -101,23 +101,38 @@ inline fun <reified F, reified N, reified M, reified T, A> A.ganaM(
         TN: Traverse<N> = traverse(),
         MM: Monad<M> = monad(),
         dNF: DistributiveLaw<N, F> = distributiveLaw(),
-        noinline gCoalgM: GCoalgebraM<N, M, F, A>
-) = CT.ganaM(this, dNF, gCoalgM, TF, MN, TN, MM)
+        noinline coalg: GCoalgebraM<N, M, F, A>
+) = CT.ganaM(this, dNF, coalg, TF, MN, TN, MM)
 
 // apo
 
 inline fun <reified F, reified T, A> A.apo(
         CT: Corecursive<T> = corecursive(),
         FF: Functor<F> = functor(),
-        noinline gCoalg: GCoalgebra<EitherKindPartial<HK<T, F>>, F, A>
-) = CT.apo(this, gCoalg, FF)
+        noinline coalg: GCoalgebra<EitherKindPartial<HK<T, F>>, F, A>
+) = CT.apo(this, coalg, FF)
 
 inline fun <reified F, reified M, reified T,A> A.apoM(
         CT: Corecursive<T> = corecursive(),
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
-        noinline gCoalgM: GCoalgebraM<EitherKindPartial<HK<T, F>>, M, F, A>
-) = CT.apoM(this, gCoalgM, TF, MM)
+        noinline coalg: GCoalgebraM<EitherKindPartial<HK<T, F>>, M, F, A>
+) = CT.apoM(this, coalg, TF, MM)
+
+// futu
+inline fun <reified F, reified T, A> A.futu(
+        CT: Corecursive<T> = corecursive(),
+        MF: Monad<F> = monad(),
+        noinline coalg: GCoalgebra<FreeKindPartial<F>, F, A>
+) = CT.futu(this, coalg, MF)
+
+inline fun <reified F, reified M, reified T, A> A.futuM(
+        CT: Corecursive<T> = corecursive(),
+        MF: Monad<F> = monad(),
+        TF: Traverse<F> = traverse(),
+        MM: Monad<M> = monad(),
+        noinline coalg: GCoalgebraM<FreeKindPartial<F>, M, F, A>
+) = CT.futuM(this, coalg, MF, TF, MM)
 
 // hylo
 
@@ -130,9 +145,9 @@ inline fun <reified F, A, B> A.hylo(
 inline fun <reified F, reified M, A, B> A.hyloM(
         TF: Traverse<F> = traverse(),
         MM: Monad<M> = monad(),
-        noinline algM: AlgebraM<M, F, B>,
-        noinline coalgM: CoalgebraM<M, F, A>
-) = hyloM(this, algM, coalgM, TF, MM)
+        noinline alg: AlgebraM<M, F, B>,
+        noinline coalg: CoalgebraM<M, F, A>
+) = hyloM(this, alg, coalg, TF, MM)
 
 inline fun <reified W, reified N, reified F, A, B> A.ghylo(
         CW: Comonad<W> = comonad(),
@@ -140,9 +155,9 @@ inline fun <reified W, reified N, reified F, A, B> A.ghylo(
         FF: Functor<F> = functor(),
         dFW: DistributiveLaw<F, W> = distributiveLaw(),
         dNF: DistributiveLaw<N, F> = distributiveLaw(),
-        noinline gAlg: GAlgebra<W, F, B>,
-        noinline gCoalg: GCoalgebra<N, F, A>
-) = ghylo(this, dFW, dNF, gAlg, gCoalg, CW, MN, FF)
+        noinline alg: GAlgebra<W, F, B>,
+        noinline coalg: GCoalgebra<N, F, A>
+) = ghylo(this, dFW, dNF, alg, coalg, CW, MN, FF)
 
 inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         CW: Comonad<W> = comonad(),
@@ -153,9 +168,9 @@ inline fun <reified W, reified N, reified M, reified F, A, B> A.ghyloM(
         TF: Traverse<F> = traverse(),
         dFW: DistributiveLaw<F, W> = distributiveLaw(),
         dNF: DistributiveLaw<N, F> = distributiveLaw(),
-        noinline gAlgM: GAlgebraM<W, M, F, B>,
-        noinline gCoalgM: GCoalgebraM<N, M, F, A>
-) = ghyloM(this, dFW, dNF, gAlgM, gCoalgM, CW, TW, MN, TN, MM, TF)
+        noinline alg: GAlgebraM<W, M, F, B>,
+        noinline coalg: GCoalgebraM<N, M, F, A>
+) = ghyloM(this, dFW, dNF, alg, coalg, CW, TW, MN, TN, MM, TF)
 
 // other
 

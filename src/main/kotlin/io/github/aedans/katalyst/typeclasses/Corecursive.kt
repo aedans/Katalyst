@@ -2,6 +2,7 @@ package io.github.aedans.katalyst.typeclasses
 
 import arrow.*
 import arrow.core.*
+import arrow.free.*
 import arrow.instances.*
 import arrow.typeclasses.*
 import io.github.aedans.katalyst.*
@@ -69,4 +70,18 @@ interface Corecursive<T> : TC {
                        TF: Traverse<F>, MM: Monad<M>): HK<M, HK<T, F>> =
             hyloM(a, { MM.pure(embedT(TF.map(TF.map(it.unnest()) { it.ev() }) { it.merge() }, TF)) }, { MM.map(coalg(it)) { it.nest() } },
                     ComposedTraverse(TF, Either.traverse<HK<T, F>>(), Either.applicative()), MM)
+
+    /**
+     * Ana that also computes future elements.
+     */
+    fun <F, A> futu(a: A, coalg: GCoalgebra<FreeKindPartial<F>, F, A>,
+                    MF: Monad<F>): HK<T, F> =
+            gana(a, distFutu(MF), coalg, MF, Free.monad())
+
+    /**
+     * Futu generalized over a monad.
+     */
+    fun <F, M, A> futuM(a: A, coalg: GCoalgebraM<FreeKindPartial<F>, M, F, A>,
+                        MF: Monad<F>, TF: Traverse<F>, MM: Monad<M>): HK<M, HK<T, F>> =
+            ganaM(a, distFutu(MF), coalg, TF, Free.monad(), /* Free.traverse() */ TODO("Free.traverse()"), MM)
 }
