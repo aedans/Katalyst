@@ -75,13 +75,15 @@ interface Corecursive<T> : TC {
      * Ana that also computes future elements.
      */
     fun <F, A> futu(a: A, coalg: GCoalgebra<FreeKindPartial<F>, F, A>,
-                    MF: Monad<F>): HK<T, F> =
-            gana(a, distFutu(MF), coalg, MF, Free.monad())
+                    FF: Functor<F>): HK<T, F> =
+            gana(a, distFutu(FF), coalg,
+                    FF, Free.monad())
 
     /**
      * Futu generalized over a monad.
      */
     fun <F, M, A> futuM(a: A, coalg: GCoalgebraM<FreeKindPartial<F>, M, F, A>,
                         MF: Monad<F>, TF: Traverse<F>, MM: Monad<M>): HK<M, HK<T, F>> =
-            ganaM(a, distFutu(MF), coalg, TF, Free.monad(), /* Free.traverse() */ TODO("Free.traverse()"), MM)
+            ganaM(a, distFutu(MF), coalg,
+                    TF, Free.monad(), /* Free.traverse() */ TODO("Free.traverse()"), MM)
 }

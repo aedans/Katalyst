@@ -75,12 +75,14 @@ interface Recursive<T> : TC {
      */
     fun <F, A> histo(t: HK<T, F>, alg: GAlgebra<CofreeKindPartial<F>, F, A>,
                      FF: Functor<F>): A =
-            gcata(t, distHisto(FF), alg, FF, Cofree.comonad())
+            gcata(t, distHisto(FF), alg,
+                    FF, Cofree.comonad())
 
     /**
      * Histo generalized over a comonad.
      */
     fun <F, W, A> ghisto(t: HK<T, F>, dFW: DistributiveLaw<F, W>, alg: GAlgebra<CofreeKindPartial<W>, F, A>,
                          FF: Functor<F>, FW: Functor<W>): A =
-            gcata(t, distGHisto(dFW, FF, FW), alg, FF, Cofree.comonad())
+            gcata(t, distGHisto(dFW, FF, FW), alg,
+                    FF, Cofree.comonad())
 }

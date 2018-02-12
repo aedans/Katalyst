@@ -51,13 +51,13 @@ fun <F, H> distGHisto(
             FH)
 }
 
-fun <F> distFutu(MF: Monad<F>) =
-        object : DistributiveLaw<FreeKindPartial<F>, F> by distGFutu<F, F>(DistributiveLaw.refl(), MF, MF) { }
+fun <F> distFutu(FF: Functor<F>) =
+        object : DistributiveLaw<FreeKindPartial<F>, F> by distGFutu<F, F>(DistributiveLaw.refl(), FF, FF) { }
 
-fun <F, H> distGFutu(dHF: DistributiveLaw<H, F>, FF: Functor<F>, MH: Monad<H>) =
+fun <F, H> distGFutu(dHF: DistributiveLaw<H, F>, FF: Functor<F>, FH: Functor<H>) =
         object : DistributiveLaw<FreeKindPartial<H>, F> {
             override fun <A> invokeK(fa: FreeKind<H, HK<F, A>>): HK<F, FreeKind<H, A>> =
-                    fa.ev().toGFree<MuHK, H, HK<F, A>>(MH).cata {
+                    fa.ev().toGFree<MuHK, H, HK<F, A>>(FH).cata {
                         it.ev().run.fold(
                                 { FF.map(it) { Free.pure<H, A>(it) } },
                                 { FF.map(dHF.invokeK(it)) { Free.monad<H>().flatten(Free.liftF(it)) } }
