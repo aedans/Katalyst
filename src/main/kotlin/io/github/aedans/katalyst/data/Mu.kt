@@ -16,16 +16,6 @@ abstract class Mu<out F> : MuKind<F> {
 }
 
 @instance(Mu::class)
-interface MuRecursiveInstance : Recursive<MuHK> {
-    override fun <F> projectT(t: MuKind<F>, FF: Functor<F>) = Mu.birecursive().projectT(t, FF)
-}
-
-@instance(Mu::class)
-interface MuCorecursiveInstance : Corecursive<MuHK> {
-    override fun <F> embedT(t: HK<F, MuKind<F>>, FF: Functor<F>) = Mu.birecursive().embedT(t, FF)
-}
-
-@instance(Mu::class)
 interface MuBirecursiveInstance : Birecursive<MuHK> {
     override fun <F> embedT(t: HK<F, MuKind<F>>, FF: Functor<F>) = object : Mu<F>() {
         override fun <A> unMu(fa: Algebra<F, A>) = fa(FF.map(t) { cata(it, fa, FF) })
@@ -34,3 +24,9 @@ interface MuBirecursiveInstance : Birecursive<MuHK> {
     override fun <F> projectT(t: MuKind<F>, FF: Functor<F>): HK<F, MuKind<F>> = cata(t, { FF.map(it, embed(FF)) }, FF)
     override fun <F, A> cata(t: MuKind<F>, alg: Algebra<F, A>, FF: Functor<F>): A = t.ev().unMu(alg)
 }
+
+@instance(Mu::class)
+interface MuRecursiveInstance : Recursive<MuHK>, MuBirecursiveInstance
+
+@instance(Mu::class)
+interface MuCorecursiveInstance : Corecursive<MuHK>, MuBirecursiveInstance

@@ -19,16 +19,6 @@ class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {
 }
 
 @instance(Nu::class)
-interface NuRecursiveInstance : Recursive<NuHK> {
-    override fun <F> projectT(t: NuKind<F>, FF: Functor<F>) = Nu.birecursive().projectT(t, FF)
-}
-
-@instance(Nu::class)
-interface NuCorecursiveInstance : Corecursive<NuHK> {
-    override fun <F> embedT(t: HK<F, NuKind<F>>, FF: Functor<F>) = Nu.birecursive().embedT(t, FF)
-}
-
-@instance(Nu::class)
 interface NuBirecursiveInstance : Birecursive<NuHK> {
     override fun <F> projectT(t: NuKind<F>, FF: Functor<F>) = t.ev().let { ev ->
         FF.map(ev.unNu(ev.a)) { Nu(it, ev.unNu) }
@@ -37,3 +27,9 @@ interface NuBirecursiveInstance : Birecursive<NuHK> {
     override fun <F> embedT(t: HK<F, NuKind<F>>, FF: Functor<F>) = Nu.invoke(t) { FF.map(it, project(FF)) }
     override fun <F, A> ana(a: A, coalg: Coalgebra<F, A>, FF: Functor<F>) = Nu(a, coalg)
 }
+
+@instance(Nu::class)
+interface NuRecursiveInstance : Recursive<NuHK>, NuBirecursiveInstance
+
+@instance(Nu::class)
+interface NuCorecursiveInstance : NuBirecursiveInstance
