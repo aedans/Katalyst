@@ -11,14 +11,18 @@ val intGen = Gen.choose(0, 10)
 
 inline fun <reified T> gNatGen() = intGen.map { it.toGNat<T>() }
 
-inline fun <reified T> paraFactorialAlgebra() = GAlgebra<PairKWKindPartial<GNat<T>>, OptionHK, Int> {
-    it.ev().map { it.ev() }.fold({ 1 }, { (i, n) -> (i.toInt() + 1) * n })
+fun <T> paraFromGNatAlgebra() = GAlgebra<PairKWKindPartial<GNat<T>>, NatPattern, Int> {
+    it.ev().map { it.ev() }.fold({ 0 }, { it.b + 1 })
 }
 
-fun histoFromGNatAlgebra() = GAlgebra<CofreeKindPartial<OptionHK>, OptionHK, Int> {
+fun histoFromGNatAlgebra() = GAlgebra<CofreeKindPartial<NatPattern>, NatPattern, Int> {
     it.ev().map { it.ev() }.fold({ 0 }, { it.head + 1 })
 }
 
-fun futuToGNatCoalgebra() = GCoalgebra<FreeKindPartial<OptionHK>, OptionHK, Int> { it ->
+fun <T> apoToGNatCoalgebra() = GCoalgebra<EitherKindPartial<GNat<T>>, NatPattern, Int> {
+    if (it == 0) Option.empty() else Option.pure(Right(it - 1))
+}
+
+fun futuToGNatCoalgebra() = GCoalgebra<FreeKindPartial<NatPattern>, NatPattern, Int> { it ->
     if (it == 0) Option.empty() else Option.pure(Free.pure(it - 1))
 }

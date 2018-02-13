@@ -31,8 +31,8 @@ object RecursiveLaws {
             },
             Law("Recursive Laws: para == paraM Id") {
                 forAll(gNatGen<T>()) {
-                    val para: Int = it.para(alg = paraFactorialAlgebra())
-                    val paraM: IdKind<Int> = it.paraM { Id.pure(paraFactorialAlgebra<T>()(it)) }
+                    val para: Int = it.para(alg = paraFromGNatAlgebra())
+                    val paraM: IdKind<Int> = it.paraM { Id.pure(paraFromGNatAlgebra<T>()(it)) }
                     para == paraM.value()
                 }
             },

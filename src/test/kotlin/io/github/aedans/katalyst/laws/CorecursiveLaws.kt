@@ -1,7 +1,6 @@
 package io.github.aedans.katalyst.laws
 
 import arrow.core.*
-import arrow.syntax.either.*
 import arrow.test.laws.Law
 import io.github.aedans.katalyst.fixedpoint.*
 import io.github.aedans.katalyst.syntax.*
@@ -32,16 +31,8 @@ object CorecursiveLaws {
             },
             Law("Corecursive Laws: apo == apoM Id") {
                 forAll(intGen) {
-                    val coalg: GCoalgebra<EitherKindPartial<GNat<T>>, OptionHK, Int> = {
-                        when {
-                            it == 0 -> None
-                            it % 2 == 0 -> Some(1.toGNat<T>().left())
-                            else -> Some((it - 1).right())
-                        }
-                    }
-
-                    val apo: GNat<T> = it.apo(coalg = coalg)
-                    val apoM: IdKind<GNat<T>> = it.apoM { Id.pure(coalg(it)) }
+                    val apo: GNat<T> = it.apo(coalg = apoToGNatCoalgebra())
+                    val apoM: IdKind<GNat<T>> = it.apoM { Id.pure(apoToGNatCoalgebra<T>()(it)) }
                     apo.toInt() == apoM.value().toInt()
                 }
             },
