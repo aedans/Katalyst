@@ -64,35 +64,35 @@ typealias Expr = FixKind<ExprPHK>
 
 // Define convenience functions for constructing expressions
 fun int(i: Int) = Fix(ExprP.Int(i))
-fun neg(e: Expr) = Fix(ExprP.Neg(e))
-fun plus(a: Expr, b: Expr) = Fix(ExprP.Plus(a, b))
+fun neg(e: Expr) = Fix(ExprP.Neg(Eval.now(e)))
+fun plus(a: Expr, b: Expr) = Fix(ExprP.Plus(Eval.now(a), Eval.now(b)))
 
 // Define an algebra to evaluate an expression
-fun evalExprAlgebra() = Algebra<ExprPHK, Int> {
+fun evalExprAlgebra() = Algebra<ExprPHK, Eval<Int>> {
     val ev = it.ev()
     when (ev) {
-        is ExprP.Int -> ev.value
-        is ExprP.Neg -> -ev.expr
-        is ExprP.Plus -> ev.expr1 + ev.expr2
+        is ExprP.Int -> Eval.now(ev.value)
+        is ExprP.Neg -> ev.expr.map { -it }
+        is ExprP.Plus -> Eval.monad().binding { ev.expr1.bind() + ev.expr2.bind() }.ev()
     }
 }
 
 // Define an algebra to show an expression
-fun showExprAlgebra() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
+fun showExprAlgebra() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, Eval<String>> {
     val ev = it.ev()
     when (ev) {
-        is ExprP.Int -> ev.value.toString()
+        is ExprP.Int -> Eval.now(ev.value.toString())
         is ExprP.Neg -> {
             val (negated, str) = ev.expr.ev()
-            if (negated.ev().unfix.ev().isAtomic) "-$str" // if the negated expression is atomic, parentheses are redundant
-            else "-($str)"
+            if (negated.ev().unfix.ev().isAtomic) str.map { "-$it" } // if the negated expression is atomic, parentheses are redundant
+            else str.map { "-($str)" }
         }
         is ExprP.Plus -> {
             val (plus1, str1) = ev.expr1.ev()
             val (plus2, str2) = ev.expr2.ev()
-            val strA = if (plus1.ev().unfix.ev().isAtomic) str1 else "($str1)"
-            val strB = if (plus2.ev().unfix.ev().isAtomic) str2 else "($str2)"
-            "$strA + $strB"
+            val strA = if (plus1.ev().unfix.ev().isAtomic) str1 else str1.map { "($it)" }
+            val strB = if (plus2.ev().unfix.ev().isAtomic) str2 else str2.map { "($it)" }
+            Eval.monad().binding { "${strA.bind()} + ${strB.bind()}" }.ev()
         }
     }
 }
@@ -101,9 +101,8 @@ fun showExprAlgebra() = GAlgebra<PairKWKindPartial<Expr>, ExprPHK, String> {
 fun main(args: Array<String>) {
     val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
     expr.cata(alg = evalExprAlgebra()) // -4
-    expr.para(gAlg = showExprAlgebra()) // (1 + 2) + -(3 + 4)
+    expr.para(alg = showExprAlgebra()) // (1 + 2) + -(3 + 4)
 }
-
 ```
 
 Contributing

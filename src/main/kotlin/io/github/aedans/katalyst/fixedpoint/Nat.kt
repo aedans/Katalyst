@@ -20,9 +20,9 @@ fun toGNatCoalgebra() = Coalgebra<NatPattern, Int> {
     if (it == 0) None else Some(it - 1)
 }
 
-fun fromGNatAlgebra() = Algebra<NatPattern, Int> {
-    it.ev().fold({ 0 }, { it + 1 })
+fun fromGNatAlgebra() = Algebra<NatPattern, Eval<Int>> {
+    it.ev().fold({ Eval.Zero }, { it.map { it + 1 } })
 }
 
 inline fun <reified T> Int.toGNat(): GNat<T> = ana(coalg = toGNatCoalgebra())
-inline fun <reified T> GNat<T>.toInt() = cata(alg = fromGNatAlgebra())
+inline fun <reified T> GNat<T>.toInt(): Int = cata(alg = fromGNatAlgebra())

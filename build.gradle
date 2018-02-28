@@ -47,6 +47,12 @@ dependencies {
     kaptTest    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
 }
 
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.allSource

@@ -6,8 +6,6 @@ import io.github.aedans.katalyst.laws.BirecursiveLaws
 
 class FixTest : UnitSpec() {
     init {
-        testLaws(
-                BirecursiveLaws.laws<FixHK>()
-        )
+        testLaws(BirecursiveLaws.laws<FixHK>())
     }
 }

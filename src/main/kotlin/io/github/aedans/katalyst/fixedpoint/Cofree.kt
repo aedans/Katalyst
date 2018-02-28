@@ -22,9 +22,9 @@ fun <S, A> toGCofreeCoalgebra() = Coalgebra<CofreePattern<S, A>, Cofree<S, A>> {
     EnvT(it.head toT it.tailForced())
 }
 
-fun <S, A> fromGCofreeAlgebra(FS: Functor<S>) = Algebra<CofreePattern<S, A>, Cofree<S, A>> {
+fun <S, A> fromGCofreeAlgebra(FS: Functor<S>) = Algebra<CofreePattern<S, A>, Eval<Cofree<S, A>>> {
     val ev = it.ev()
-    Cofree(FS, ev.ask, Eval.later { ev.lower })
+    Eval.now(Cofree(FS, ev.ask, Eval.later { FS.map(ev.lower) { it.value() } }))
 }
 
 inline fun <reified T, S, A> Cofree<S, A>.toGCofree(): GCofree<T, S, A> = ana(coalg = toGCofreeCoalgebra())

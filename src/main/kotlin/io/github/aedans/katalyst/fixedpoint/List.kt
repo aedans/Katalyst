@@ -1,6 +1,7 @@
 package io.github.aedans.katalyst.fixedpoint
 
 import arrow.HK
+import arrow.core.Eval
 import io.github.aedans.katalyst.data.*
 import io.github.aedans.katalyst.syntax.*
 
@@ -19,8 +20,8 @@ fun <A> toGListCoalgebra() = Coalgebra<ListPattern<A>, List<A>> {
     if (it.isEmpty()) MaybeAnd.empty else MaybeAnd(it.first(), it.drop(1))
 }
 
-fun <A> fromGListAlgebra() = Algebra<ListPattern<A>, List<A>> {
-    it.ev().value.fold({ emptyList() }, { listOf(it.a) + it.b })
+fun <A> fromGListAlgebra() = Algebra<ListPattern<A>, Eval<List<A>>> {
+    it.ev().value.fold({ Eval.now(emptyList()) }, { it.b.map { b -> listOf(it.a) + b } })
 }
 
 inline fun <reified T, A> List<A>.toGList(): GList<T, A> = ana(coalg = toGListCoalgebra())

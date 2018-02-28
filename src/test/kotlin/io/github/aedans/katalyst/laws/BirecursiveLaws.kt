@@ -4,6 +4,7 @@ import arrow.core.OptionHK
 import arrow.test.laws.Law
 import io.github.aedans.katalyst.fixedpoint.*
 import io.github.aedans.katalyst.syntax.*
+import io.kotlintest.matchers.shouldEqual
 import io.kotlintest.properties.forAll
 
 object BirecursiveLaws {
@@ -14,6 +15,9 @@ object BirecursiveLaws {
                     val hylo = it.hylo(alg = fromGNatAlgebra(), coalg = toGNatCoalgebra())
                     hylo == composed
                 }
+            },
+            Law("Birecursive Laws: Stack-safe cata, ana, and hylo") {
+                100000.toGNat<T>().cata(alg = fromGNatAlgebra()) shouldEqual 100000
             }
     )
 }

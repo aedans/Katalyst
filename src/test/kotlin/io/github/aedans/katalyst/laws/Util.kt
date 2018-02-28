@@ -7,7 +7,7 @@ import io.github.aedans.katalyst.fixedpoint.*
 import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.properties.*
 
-val intGen = Gen.choose(0, 10)
+val intGen = Gen.choose(0, 1000)
 
 inline fun <reified T> gNatGen() = intGen.map { it.toGNat<T>() }
 

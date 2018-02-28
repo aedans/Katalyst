@@ -29,11 +29,11 @@ fun <S, A> toGFreeCoalgebra(FS: Functor<S>) = Coalgebra<FreePattern<S, A>, Free<
     runStep(free)
 }
 
-fun <S, A> fromGFreeAlgebra() = Algebra<FreePattern<S, A>, Free<S, A>> {
-    it.ev().run.fold(
+fun <S, A> fromGFreeAlgebra() = Algebra<FreePattern<S, A>, Eval<Free<S, A>>> {
+    Eval.now(it.ev().run.fold(
             Free.Companion::pure,
-            { Free.monad<S>().flatten(Free.liftF(it)).ev() }
-    )
+            { ssa -> Free.liftF(ssa).ev().flatMap { it.value() } }
+    ))
 }
 
 inline fun <reified T, S, A> Free<S, A>.toGFree(FS: Functor<S>): GFree<T, S, A> = ana(coalg = toGFreeCoalgebra(FS))
