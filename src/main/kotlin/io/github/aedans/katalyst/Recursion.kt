@@ -18,7 +18,7 @@ fun <F, A, B> hylo(
 }
 
 ///**
-// * Hylo generalized over a monad.,
+// * Hylo generalized over a monad.
 // */
 //fun <M, F, A, B> hyloM(
 //        a: A,

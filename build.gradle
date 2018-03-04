@@ -2,7 +2,7 @@ group 'io.github.aedans'
 version '0.7.0'
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.30'
 
     repositories {
         mavenCentral()

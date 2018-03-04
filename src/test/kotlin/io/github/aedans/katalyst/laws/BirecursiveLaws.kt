@@ -17,7 +17,7 @@ object BirecursiveLaws {
                 }
             },
             Law("Birecursive Laws: Stack-safe cata, ana, and hylo") {
-                100000.toGNat<T>().cata(alg = fromGNatAlgebra()) shouldEqual 100000
+                10000.toGNat<T>().cata(alg = fromGNatAlgebra()) shouldEqual 100000
             }
     )
 }
