@@ -9,22 +9,21 @@ import io.github.aedans.katalyst.syntax.*
 /**
  * Typeclass for types that can be generically folded with algebras.
  */
-@typeclass
-interface Recursive<T> : TC {
+interface Recursive<T> {
     /**
      * Implementation for project.
      */
-    fun <F> projectT(t: HK<T, F>, FF: Functor<F>): HK<F, HK<T, F>>
+    fun <F> projectT(t: Kind<T, F>, FF: Functor<F>): Kind<F, Kind<T, F>>
 
     /**
      * Creates a coalgebra given a functor.
      */
-    fun <F> project(FF: Functor<F>): Coalgebra<F, HK<T, F>> =
+    fun <F> project(FF: Functor<F>): Coalgebra<F, Kind<T, F>> =
             { projectT(it, FF) }
 
     /**
      * Fold generalized over any recursive type.
      */
-    fun <F, A> cata(t: HK<T, F>, alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
-            hylo(t, alg, project(FF), FF)
+    fun <F, A> Kind<T, F>.cata(alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
+            hylo(this, alg, project(FF), FF)
 }

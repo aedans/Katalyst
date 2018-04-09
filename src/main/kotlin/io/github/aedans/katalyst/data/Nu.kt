@@ -12,7 +12,7 @@ import io.github.aedans.katalyst.typeclasses.*
  * This type is the type level encoding of ana.
  */
 @higherkind
-class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {
+class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuOf<F> {
     companion object {
         // Necessary because of Coalgebra's variance
         @Suppress("UNCHECKED_CAST")
@@ -21,22 +21,23 @@ class Nu<out F>(val a: Any?, val unNu: Coalgebra<F, Any?>) : NuKind<F> {
 }
 
 @instance(Nu::class)
-interface NuBirecursiveInstance : Birecursive<NuHK> {
-    override fun <F> projectT(t: NuKind<F>, FF: Functor<F>): HK<F, Nu<F>> {
-        val ev = t.ev()
-        val unNu = ev.unNu
-        return FF.map(unNu(ev.a)) { Nu(it, unNu) }
+interface NuBirecursiveInstance : Birecursive<ForNu> {
+    override fun <F> projectT(t: NuOf<F>, FF: Functor<F>): Kind<F, Nu<F>> = FF.run {
+        val fix = t.fix()
+        val unNu = fix.unNu
+        unNu(fix.a).map { Nu(it, unNu) }
     }
 
-    override fun <F> embedT(t: HK<F, Eval<NuKind<F>>>, FF: Functor<F>) =
-            Eval.now(Nu.invoke(t) { f -> FF.map(f) { nu -> FF.map(projectT(nu.value(), FF), ::Now) } })
+    override fun <F> embedT(t: Kind<F, Eval<NuOf<F>>>, FF: Functor<F>) = FF.run {
+        Eval.now(Nu.invoke(t) { f -> f.map { nu -> projectT(nu.value(), FF).map(::Now) } })
+    }
 
-    override fun <F, A> ana(a: A, coalg: Coalgebra<F, A>, FF: Functor<F>) =
-            Nu(a, coalg)
+    override fun <F, A> A.ana(coalg: Coalgebra<F, A>, FF: Functor<F>) =
+            Nu(this, coalg)
 }
 
 @instance(Nu::class)
-interface NuRecursiveInstance : Recursive<NuHK>, NuBirecursiveInstance
+interface NuRecursiveInstance : Recursive<ForNu>, NuBirecursiveInstance
 
 @instance(Nu::class)
-interface NuCorecursiveInstance : Corecursive<NuHK>, NuBirecursiveInstance
+interface NuCorecursiveInstance : Corecursive<ForNu>, NuBirecursiveInstance

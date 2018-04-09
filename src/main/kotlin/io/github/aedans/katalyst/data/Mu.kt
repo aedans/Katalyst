@@ -12,28 +12,36 @@ import io.github.aedans.katalyst.typeclasses.*
  * This type is the type level encoding of cata.
  */
 @higherkind
-abstract class Mu<out F> : MuKind<F> {
+abstract class Mu<out F> : MuOf<F> {
     abstract fun <A> unMu(fa: Algebra<F, Eval<A>>): Eval<A>
     companion object
 }
 
 @instance(Mu::class)
-interface MuBirecursiveInstance : Birecursive<MuHK> {
-    override fun <F> embedT(t: HK<F, Eval<MuKind<F>>>, FF: Functor<F>): Eval<Mu<F>> =
-            Eval.now(object : Mu<F>() {
-                override fun <A> unMu(fa: Algebra<F, Eval<A>>) =
-                        fa(FF.map(t) { it.flatMap { it.ev().unMu(fa) } })
-            })
+interface MuBirecursiveInstance : Birecursive<ForMu> {
+    override fun <F> embedT(t: Kind<F, Eval<MuOf<F>>>, FF: Functor<F>): Eval<Mu<F>> = FF.run {
+        Eval.now(object : Mu<F>() {
+            override fun <A> unMu(fa: Algebra<F, Eval<A>>) =
+                    fa(t.map { it.flatMap { it.fix().unMu(fa) } })
+        })
+    }
 
-    override fun <F> projectT(t: MuKind<F>, FF: Functor<F>): HK<F, MuKind<F>> =
-        cata(t, { ff -> Eval.later { FF.map(ff) { f -> embedT(FF.map(f.value(), ::Now), FF).value() } } }, FF)
+    override fun <F> projectT(t: MuOf<F>, FF: Functor<F>): Kind<F, MuOf<F>> = FF.run {
+        t.cata({ ff ->
+            Eval.later {
+                ff.map { f ->
+                    embedT(f.value().map(::Now), FF).value()
+                }
+            }
+        }, FF)
+    }
 
-    override fun <F, A> cata(t: MuKind<F>, alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
-            t.ev().unMu(alg).value()
+    override fun <F, A> MuOf<F>.cata(alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
+            fix().unMu(alg).value()
 }
 
 @instance(Mu::class)
-interface MuRecursiveInstance : Recursive<MuHK>, MuBirecursiveInstance
+interface MuRecursiveInstance : Recursive<ForMu>, MuBirecursiveInstance
 
 @instance(Mu::class)
-interface MuCorecursiveInstance : Corecursive<MuHK>, MuBirecursiveInstance
+interface MuCorecursiveInstance : Corecursive<ForMu>, MuBirecursiveInstance

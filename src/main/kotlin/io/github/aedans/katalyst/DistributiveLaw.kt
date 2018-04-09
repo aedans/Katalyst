@@ -1,6 +1,6 @@
 package io.github.aedans.katalyst
 
-import arrow.HK
+import arrow.Kind
 import arrow.core.*
 import arrow.typeclasses.*
 
@@ -8,22 +8,26 @@ import arrow.typeclasses.*
  * A function from F<G<A>> to G<F<A>> i.e. Traverse.sequence.
  */
 interface DistributiveLaw<F, G> : FunctionK<Nested<F, G>, Nested<G, F>> {
-    override fun <A> invoke(fa: HK<Nested<F, G>, A>): HK<Nested<G, F>, A> = invokeK(fa.unnest()).nest()
-    fun <A> invokeK(fa: HK<F, HK<G, A>>): HK<G, HK<F, A>> = invoke(fa.nest()).unnest()
+    override fun <A> invoke(fa: Kind<Nested<F, G>, A>): Kind<Nested<G, F>, A> = invokeK(fa.unnest()).nest()
+    fun <A> invokeK(fa: Kind<F, Kind<G, A>>): Kind<G, Kind<F, A>> = invoke(fa.nest()).unnest()
 
     companion object {
         fun <T> refl() = object : DistributiveLaw<T, T> {
-            override fun <A> invokeK(fa: HK<T, HK<T, A>>) = fa
+            override fun <A> invokeK(fa: Kind<T, Kind<T, A>>) = fa
         }
     }
 }
 
-operator fun <F, G, B> DistributiveLaw<F, G>.invoke(p0: HK<F, HK<G, B>>) = invokeK(p0)
+operator fun <F, G, B> DistributiveLaw<F, G>.invoke(p0: Kind<F, Kind<G, B>>) = invokeK(p0)
 
-fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>) = object : DistributiveLaw<F, G> {
-    override fun <A> invoke(fa: HK<Nested<F, G>, A>) = TF.sequence(AG, fa.unnest()).nest()
+fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>) = TF.run {
+    object : DistributiveLaw<F, G> {
+        override fun <A> invoke(fa: Kind<Nested<F, G>, A>) = fa.unnest().sequence(AG).nest()
+    }
 }
 
-fun <F> distCata(TF: Traverse<F>) = object : DistributiveLaw<F, IdHK> {
-    override fun <A> invoke(fa: NestedType<F, IdHK, A>) = TF.sequence(Id.applicative(), fa.unnest()).nest()
+fun <F> distCata(TF: Traverse<F>) = TF.run {
+    object : DistributiveLaw<F, ForId> {
+        override fun <A> invoke(fa: NestedType<F, ForId, A>) = fa.unnest().sequence(Id.applicative()).nest()
+    }
 }

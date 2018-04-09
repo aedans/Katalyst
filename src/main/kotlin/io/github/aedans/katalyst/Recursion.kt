@@ -12,7 +12,7 @@ fun <F, A, B> hylo(
         alg: Algebra<F, Eval<B>>,
         coalg: Coalgebra<F, A>,
         FF: Functor<F>
-): B {
-    fun h(a: A): Eval<B> = alg(FF.map(coalg(a)) { Eval.defer { h(it) } })
+): B = FF.run {
+    fun h(a: A): Eval<B> = alg(coalg(a).map { Eval.defer { h(it) } })
     return h(a).value()
 }
