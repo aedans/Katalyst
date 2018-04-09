@@ -29,9 +29,9 @@ Features
 - [x] Kleisli recursion schemes
 - [x] Generalized recursion schemes
 - [x] Advanced recursion schemes (para, apo, histo, futu, etc.)
-- [ ] Elgot recursion schemes
-- [ ] Free and Cofree defined using recursion schemes
+- [x] Free and Cofree defined using recursion schemes
 - [ ] Recursive and Corecursive instances for Free and Cofree
+- [ ] Elgot recursion schemes
 
 Code sample
 -----------
