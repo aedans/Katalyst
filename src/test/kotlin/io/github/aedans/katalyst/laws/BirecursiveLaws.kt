@@ -10,7 +10,7 @@ import io.kotlintest.properties.forAll
 
 object BirecursiveLaws {
     inline fun <reified T> laws(BT: Birecursive<T>): List<Law> = BT.run {
-        RecursiveLaws.laws(BT) + CorecursiveLaws.laws(BT) + listOf(
+        CorecursiveLaws.laws(BT) + RecursiveLaws.laws(BT) + listOf(
                 Law("Birecursive Laws: ana . cata == hylo") {
                     forAll(intGen) {
                         val composed = it

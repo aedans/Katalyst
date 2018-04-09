@@ -1,8 +1,23 @@
 package io.github.aedans.katalyst
 
+import arrow.Kind
 import arrow.core.Eval
 import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.syntax.*
+
+fun <F, A> Algebra(it: Algebra<F, A>) = it
+
+fun <F, A> Coalgebra(it: Coalgebra<F, A>) = it
+
+/**
+ * Fold over a kind.
+ */
+typealias Algebra<F, A> = (Kind<F, A>) -> A
+
+/**
+ * Unfold over a kind.
+ */
+typealias Coalgebra<F, A> = (A) -> Kind<F, A>
 
 /**
  * The composition of cata and ana.
