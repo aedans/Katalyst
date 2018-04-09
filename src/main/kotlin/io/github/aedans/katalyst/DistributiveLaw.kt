@@ -27,36 +27,3 @@ fun <F, G> distributiveLaw(TF: Traverse<F>, AG: Applicative<G>) = object : Distr
 fun <F> distCata(TF: Traverse<F>) = object : DistributiveLaw<F, IdHK> {
     override fun <A> invoke(fa: NestedType<F, IdHK, A>) = TF.sequence(Id.applicative(), fa.unnest()).nest()
 }
-
-//fun <F> distHisto(FF: Functor<F>) =
-//        object : DistributiveLaw<F, CofreeKindPartial<F>> by distGHisto<F, F>(DistributiveLaw.refl(), FF, FF) { }
-//
-//fun <F, H> distGHisto(
-//        dFH: DistributiveLaw<F, H>,
-//        FF: Functor<F>,
-//        FH: Functor<H>
-//) = object : DistributiveLaw<F, CofreeKindPartial<H>> {
-//    override fun <A> invokeK(fa: HK<F, CofreeKind<H, A>>) = Cofree.unfoldT(
-//            fa,
-//            {
-//                Tuple2(
-//                        FF.map(it) { it.ev().extract() },
-//                        dFH.invokeK(FF.map(it) { it.ev().tailForced() })
-//                )
-//            },
-//            FH)
-//}
-//
-//fun <F> distFutu(FF: Functor<F>) =
-//        object : DistributiveLaw<FreeKindPartial<F>, F> by distGFutu<F, F>(DistributiveLaw.refl(), FF, FF) { }
-//
-//fun <F, H> distGFutu(dHF: DistributiveLaw<H, F>, FF: Functor<F>, FH: Functor<H>) =
-//        object : DistributiveLaw<FreeKindPartial<H>, F> {
-//            override fun <A> invokeK(fa: FreeKind<H, HK<F, A>>): HK<F, FreeKind<H, A>> =
-//                    fa.ev().toGFree<MuHK, H, HK<F, A>>(FH).cata {
-//                        it.ev().run.fold(
-//                                { Eval.now(FF.map(it) { Free.pure<H, A>(it) }) },
-//                                { Eval.now(FF.map(dHF.invokeK(FH.map(it) { it.value() })) { Free.monad<H>().flatten(Free.liftF(it)) }) }
-//                        )
-//                    }
-//        }
