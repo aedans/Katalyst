@@ -10,8 +10,8 @@ class EnvTTest : UnitSpec() {
     init {
         testLaws(
                 EqLaws.laws(EnvT.eq(), { EnvT(Unit toT Id(it)) }),
-                TraverseLaws.laws(EnvT.traverse(), EnvT.functor(), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any()),
-                ComonadLaws.laws(EnvT.comonad(), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any())
+                TraverseLaws.laws(EnvT.traverse<Unit, ForId>(Id.traverse()), EnvT.functor<Unit, ForId>(Id.functor()), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any()),
+                ComonadLaws.laws(EnvT.comonad<Unit, ForId>(Id.comonad()), cf = { EnvT(Unit toT Id(it)) }, EQ = Eq.any())
         )
     }
 }

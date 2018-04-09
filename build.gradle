@@ -2,7 +2,7 @@ group 'io.github.aedans'
 version '0.7.0'
 
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.31'
 
     repositories {
         mavenCentral()
@@ -34,17 +34,29 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    def arrow_version = '0.6.1'
+    def arrow_version = '0.7.0'
     compile "io.arrow-kt:arrow-core:$arrow_version"
+    compile "io.arrow-kt:arrow-data:$arrow_version"
+    compile "io.arrow-kt:arrow-syntax:$arrow_version"
     compile "io.arrow-kt:arrow-typeclasses:$arrow_version"
-    compile "io.arrow-kt:arrow-instances:$arrow_version"
+    compile "io.arrow-kt:arrow-instances-core:$arrow_version"
+    compile "io.arrow-kt:arrow-instances-data:$arrow_version"
     compile "io.arrow-kt:arrow-free:$arrow_version"
     kapt    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
     testCompile "io.arrow-kt:arrow-core:$arrow_version"
+    testCompile "io.arrow-kt:arrow-data:$arrow_version"
+    testCompile "io.arrow-kt:arrow-syntax:$arrow_version"
     testCompile "io.arrow-kt:arrow-typeclasses:$arrow_version"
-    testCompile "io.arrow-kt:arrow-instances:$arrow_version"
+    testCompile "io.arrow-kt:arrow-instances-core:$arrow_version"
+    testCompile "io.arrow-kt:arrow-instances-data:$arrow_version"
     testCompile "io.arrow-kt:arrow-test:$arrow_version"
     kaptTest    "io.arrow-kt:arrow-annotations-processor:$arrow_version"
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

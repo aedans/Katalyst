@@ -9,9 +9,9 @@ import io.github.aedans.katalyst.data.*
 class CoEnvTest : UnitSpec() {
     init {
         testLaws(
-                EqLaws.laws<CoEnvKind<Unit, IdHK, Int>>(CoEnv.eq(), { CoEnv(Right(Id(it))) }),
-                TraverseLaws.laws<CoEnvKindPartial<Unit, IdHK>>(CoEnv.traverse(), CoEnv.functor(), cf = { CoEnv(Right(Id(it))) }, EQ = Eq.any()),
-                MonadLaws.laws<CoEnvKindPartial<Unit, IdHK>>(CoEnv.monad(), Eq.any())
+                EqLaws.laws<CoEnvOf<Unit, ForId, Int>>(CoEnv.eq(), { CoEnv(Right(Id(it))) }),
+                TraverseLaws.laws<CoEnvPartialOf<Unit, ForId>>(CoEnv.traverse(Id.traverse()), CoEnv.functor(Id.functor()), cf = { CoEnv(Right(Id(it))) }, EQ = Eq.any()),
+                MonadLaws.laws<CoEnvPartialOf<Unit, ForId>>(CoEnv.monad(Id.monad(), Id.traverse()), Eq.any())
         )
     }
 }

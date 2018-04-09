@@ -1,6 +1,7 @@
 package io.github.aedans.katalyst.data
 
 import arrow.*
+import arrow.core.Eval
 import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.typeclasses.*
 
@@ -9,18 +10,22 @@ import io.github.aedans.katalyst.typeclasses.*
  * This type is the type level encoding of primitive recursion.
  */
 @higherkind
-data class Fix<out A>(val unfix: HK<A, FixKind<A>>) : FixKind<A> {
+data class Fix<out A>(val unfix: Kind<A, Eval<FixOf<A>>>) : FixOf<A> {
     companion object
 }
 
 @instance(Fix::class)
-interface FixBirecursiveInstance : Birecursive<FixHK> {
-    override fun <F> projectT(t: FixKind<F>, FF: Functor<F>) = t.ev().unfix
-    override fun <F> embedT(t: HK<F, FixKind<F>>, FF: Functor<F>) = Fix(t)
+interface FixBirecursiveInstance : Birecursive<ForFix> {
+    override fun <F> projectT(t: FixOf<F>, FF: Functor<F>) = FF.run {
+        t.fix().unfix.map { it.value() }
+    }
+
+    override fun <F> embedT(t: Kind<F, Eval<FixOf<F>>>, FF: Functor<F>) =
+            Eval.later { Fix(t) }
 }
 
 @instance(Fix::class)
-interface FixRecursiveInstance : Recursive<FixHK>, FixBirecursiveInstance
+interface FixRecursiveInstance : Recursive<ForFix>, FixBirecursiveInstance
 
 @instance(Fix::class)
-interface FixCorecursiveInstance : Corecursive<FixHK>, FixBirecursiveInstance
+interface FixCorecursiveInstance : Corecursive<ForFix>, FixBirecursiveInstance

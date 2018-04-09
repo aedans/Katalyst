@@ -1,6 +1,8 @@
 package io.github.aedans.katalyst.data
 
 import arrow.*
+import arrow.core.Eval
+import arrow.core.Eval.Now
 import arrow.typeclasses.Functor
 import io.github.aedans.katalyst.syntax.Algebra
 import io.github.aedans.katalyst.typeclasses.*
@@ -10,23 +12,36 @@ import io.github.aedans.katalyst.typeclasses.*
  * This type is the type level encoding of cata.
  */
 @higherkind
-abstract class Mu<out F> : MuKind<F> {
-    abstract fun <A> unMu(fa: Algebra<F, A>): A
+abstract class Mu<out F> : MuOf<F> {
+    abstract fun <A> unMu(fa: Algebra<F, Eval<A>>): Eval<A>
     companion object
 }
 
 @instance(Mu::class)
-interface MuBirecursiveInstance : Birecursive<MuHK> {
-    override fun <F> embedT(t: HK<F, MuKind<F>>, FF: Functor<F>) = object : Mu<F>() {
-        override fun <A> unMu(fa: Algebra<F, A>) = fa(FF.map(t) { cata(it, fa, FF) })
+interface MuBirecursiveInstance : Birecursive<ForMu> {
+    override fun <F> embedT(t: Kind<F, Eval<MuOf<F>>>, FF: Functor<F>): Eval<Mu<F>> = FF.run {
+        Eval.now(object : Mu<F>() {
+            override fun <A> unMu(fa: Algebra<F, Eval<A>>) =
+                    fa(t.map { it.flatMap { it.fix().unMu(fa) } })
+        })
     }
 
-    override fun <F> projectT(t: MuKind<F>, FF: Functor<F>): HK<F, MuKind<F>> = cata(t, { FF.map(it, embed(FF)) }, FF)
-    override fun <F, A> cata(t: MuKind<F>, alg: Algebra<F, A>, FF: Functor<F>): A = t.ev().unMu(alg)
+    override fun <F> projectT(t: MuOf<F>, FF: Functor<F>): Kind<F, MuOf<F>> = FF.run {
+        t.cata({ ff ->
+            Eval.later {
+                ff.map { f ->
+                    embedT(f.value().map(::Now), FF).value()
+                }
+            }
+        }, FF)
+    }
+
+    override fun <F, A> MuOf<F>.cata(alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
+            fix().unMu(alg).value()
 }
 
 @instance(Mu::class)
-interface MuRecursiveInstance : Recursive<MuHK>, MuBirecursiveInstance
+interface MuRecursiveInstance : Recursive<ForMu>, MuBirecursiveInstance
 
 @instance(Mu::class)
-interface MuCorecursiveInstance : Corecursive<MuHK>, MuBirecursiveInstance
+interface MuCorecursiveInstance : Corecursive<ForMu>, MuBirecursiveInstance
