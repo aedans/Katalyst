@@ -4,7 +4,7 @@ import arrow.*
 import arrow.core.Eval
 import arrow.core.Eval.Now
 import arrow.typeclasses.Functor
-import io.github.aedans.katalyst.syntax.Algebra
+import io.github.aedans.katalyst.Algebra
 import io.github.aedans.katalyst.typeclasses.*
 
 /**

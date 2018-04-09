@@ -3,8 +3,9 @@ package io.github.aedans.katalyst.typeclasses
 import arrow.*
 import arrow.core.Eval
 import arrow.typeclasses.Functor
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.hylo
-import io.github.aedans.katalyst.syntax.*
 
 /**
  * Typeclass for types that can be generically folded with algebras.

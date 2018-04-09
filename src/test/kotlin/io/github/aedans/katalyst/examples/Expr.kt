@@ -5,8 +5,8 @@ import arrow.core.*
 import arrow.test.UnitSpec
 import arrow.test.laws.FunctorLaws
 import arrow.typeclasses.*
+import io.github.aedans.katalyst.Algebra
 import io.github.aedans.katalyst.data.*
-import io.github.aedans.katalyst.syntax.*
 import io.kotlintest.matchers.shouldEqual
 
 // Define an expression pattern type

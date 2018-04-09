@@ -4,8 +4,9 @@ import arrow.Kind
 import arrow.core.*
 import arrow.free.Cofree
 import arrow.typeclasses.Functor
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.data.*
-import io.github.aedans.katalyst.syntax.*
 import io.github.aedans.katalyst.typeclasses.*
 
 typealias CofreePattern<S, A> = EnvTPartialOf<A, S>

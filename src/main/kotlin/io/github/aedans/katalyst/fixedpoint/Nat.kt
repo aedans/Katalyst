@@ -2,8 +2,9 @@ package io.github.aedans.katalyst.fixedpoint
 
 import arrow.Kind
 import arrow.core.*
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.data.*
-import io.github.aedans.katalyst.syntax.*
 import io.github.aedans.katalyst.typeclasses.*
 
 typealias NatPattern = ForOption

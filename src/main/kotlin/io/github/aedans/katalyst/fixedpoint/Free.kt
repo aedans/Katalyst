@@ -5,8 +5,9 @@ import arrow.core.*
 import arrow.free.*
 import arrow.free.Free.*
 import arrow.typeclasses.Functor
+import io.github.aedans.katalyst.Algebra
+import io.github.aedans.katalyst.Coalgebra
 import io.github.aedans.katalyst.data.*
-import io.github.aedans.katalyst.syntax.*
 import io.github.aedans.katalyst.typeclasses.*
 
 typealias FreePattern<S, A> = CoEnvPartialOf<A, S>
