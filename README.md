@@ -39,10 +39,10 @@ Code sample
 ```kotlin
 // Define an expression pattern type
 @higherkind
-sealed class ExprPattern<out A>(val isAtomic: Boolean) : ExprPatternOf<A> {
-    class Int(val value: kotlin.Int) : ExprPattern<Nothing>(true)
-    class Neg<out A>(val expr: A) : ExprPattern<A>(true)
-    class Plus<out A>(val expr1: A, val expr2: A) : ExprPattern<A>(false)
+sealed class ExprPattern<out A> : ExprPatternOf<A> {
+    class Int(val value: kotlin.Int) : ExprPattern<Nothing>()
+    class Neg<out A>(val expr: A) : ExprPattern<A>()
+    class Plus<out A>(val expr1: A, val expr2: A) : ExprPattern<A>()
     companion object
 }
 
