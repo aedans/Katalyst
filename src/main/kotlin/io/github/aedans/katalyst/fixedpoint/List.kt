@@ -24,7 +24,7 @@ typealias GList<T, A> = Kind<T, ListPattern<A>>
 
 typealias FixList<A> = GList<ForFix, A>
 typealias MuList<A> = GList<ForMu, A>
-typealias NiList<A> = GList<ForNu, A>
+typealias NuList<A> = GList<ForNu, A>
 
 fun <A> toGListCoalgebra() = Coalgebra<ListPattern<A>, List<A>> {
     if (it.isEmpty())
