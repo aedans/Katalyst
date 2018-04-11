@@ -1,5 +1,5 @@
 group 'io.github.aedans'
-version '0.7.2'
+version '0.8.0'
 
 buildscript {
     ext.kotlin_version = '1.2.31'
