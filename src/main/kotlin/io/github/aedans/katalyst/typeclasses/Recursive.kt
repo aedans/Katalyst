@@ -14,17 +14,17 @@ interface Recursive<T> {
     /**
      * Implementation for project.
      */
-    fun <F> projectT(t: Kind<T, F>, FF: Functor<F>): Kind<F, Kind<T, F>>
+    fun <F> projectT(FF: Functor<F>, t: Kind<T, F>): Kind<F, Kind<T, F>>
 
     /**
      * Creates a coalgebra given a functor.
      */
     fun <F> project(FF: Functor<F>): Coalgebra<F, Kind<T, F>> =
-            { projectT(it, FF) }
+            { projectT(FF, it) }
 
     /**
      * Fold generalized over any recursive type.
      */
-    fun <F, A> Kind<T, F>.cata(alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
-            hylo(this, alg, project(FF), FF)
+    fun <F, A> Kind<T, F>.cata(FF: Functor<F>, alg: Algebra<F, Eval<A>>): A =
+            hylo(FF, alg, project(FF), this)
 }

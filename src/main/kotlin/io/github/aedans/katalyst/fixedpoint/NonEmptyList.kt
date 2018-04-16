@@ -4,7 +4,6 @@ import arrow.Kind
 import arrow.core.*
 import arrow.data.NonEmptyList
 import arrow.data.nel
-import arrow.syntax.collections.prependTo
 import arrow.typeclasses.ComposedFunctor
 import arrow.typeclasses.Nested
 import arrow.typeclasses.nest
@@ -44,9 +43,9 @@ fun <A> fromGNonEmptyListAlgebra() = Algebra<NonEmptyListPattern<A>, Eval<NonEmp
 }
 
 inline fun <reified T, A> List<A>.toGNonEmptyList(CT: Corecursive<T>): GList<T, A> = CT.run {
-    ana(toGListCoalgebra(), ComposedFunctor(Option.functor(), Tuple2.functor<A>()))
+    ana(ComposedFunctor(Option.functor(), Tuple2.functor<A>()), toGListCoalgebra())
 }
 
 inline fun <reified T, A> GList<T, A>.toNonEmptyList(RT: Recursive<T>): List<A> = RT.run {
-    cata(fromGListAlgebra(), ComposedFunctor(Option.functor(), Tuple2.functor<A>()))
+    cata(ComposedFunctor(Option.functor(), Tuple2.functor<A>()), fromGListAlgebra())
 }

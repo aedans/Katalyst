@@ -14,14 +14,14 @@ object BirecursiveLaws {
                 Law("Birecursive Laws: ana . cata == hylo") {
                     forAll(intGen) {
                         val composed = it
-                                .ana(toGNatCoalgebra(), Option.functor())
-                                .cata(fromGNatAlgebra(), Option.functor())
-                        val hylo = hylo(it, fromGNatAlgebra(), toGNatCoalgebra(), Option.functor())
+                                .ana(Option.functor(), toGNatCoalgebra())
+                                .cata(Option.functor(), fromGNatAlgebra())
+                        val hylo = hylo(Option.functor(), fromGNatAlgebra(), toGNatCoalgebra(), it)
                         hylo == composed
                     }
                 },
                 Law("Birecursive Laws: Stack-safe cata, ana, and hylo") {
-                    100000.toGNat(BT).cata(fromGNatAlgebra(), Option.functor()) shouldEqual 100000
+                    100000.toGNat(BT).cata(Option.functor(), fromGNatAlgebra()) shouldEqual 100000
                 }
         )
     }

@@ -14,15 +14,15 @@ interface Corecursive<T> {
     /**
      * Implementation for embed.
      */
-    fun <F> embedT(t: Kind<F, Eval<Kind<T, F>>>, FF: Functor<F>): Eval<Kind<T, F>>
+    fun <F> embedT(FF: Functor<F>, t: Kind<F, Eval<Kind<T, F>>>): Eval<Kind<T, F>>
 
     /**
      * Creates a algebra given a functor.
      */
-    fun <F> embed(FF: Functor<F>): Algebra<F, Eval<Kind<T, F>>> = { embedT(it, FF) }
+    fun <F> embed(FF: Functor<F>): Algebra<F, Eval<Kind<T, F>>> = { embedT(FF, it) }
 
     /**
      * Unfold into any recursive type.
      */
-    fun <F, A> A.ana(coalg: Coalgebra<F, A>, FF: Functor<F>): Kind<T, F> = hylo(this, embed(FF), coalg, FF)
+    fun <F, A> A.ana(FF: Functor<F>, coalg: Coalgebra<F, A>): Kind<T, F> = hylo(FF, embed(FF), coalg, this)
 }

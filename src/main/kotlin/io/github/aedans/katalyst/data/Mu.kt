@@ -19,24 +19,24 @@ abstract class Mu<out F> : MuOf<F> {
 
 @instance(Mu::class)
 interface MuBirecursiveInstance : Birecursive<ForMu> {
-    override fun <F> embedT(t: Kind<F, Eval<MuOf<F>>>, FF: Functor<F>): Eval<Mu<F>> = FF.run {
+    override fun <F> embedT(FF: Functor<F>, t: Kind<F, Eval<MuOf<F>>>): Eval<Mu<F>> = FF.run {
         Eval.now(object : Mu<F>() {
             override fun <A> unMu(fa: Algebra<F, Eval<A>>) =
                     fa(t.map { it.flatMap { it.fix().unMu(fa) } })
         })
     }
 
-    override fun <F> projectT(t: MuOf<F>, FF: Functor<F>): Kind<F, MuOf<F>> = FF.run {
-        t.cata({ ff ->
+    override fun <F> projectT(FF: Functor<F>, t: MuOf<F>): Kind<F, MuOf<F>> = FF.run {
+        t.cata(FF, { ff ->
             Eval.later {
                 ff.map { f ->
-                    embedT(f.value().map(::Now), FF).value()
+                    embedT(FF, f.value().map(::Now)).value()
                 }
             }
-        }, FF)
+        })
     }
 
-    override fun <F, A> MuOf<F>.cata(alg: Algebra<F, Eval<A>>, FF: Functor<F>): A =
+    override fun <F, A> MuOf<F>.cata(FF: Functor<F>, alg: Algebra<F, Eval<A>>): A =
             fix().unMu(alg).value()
 }
 

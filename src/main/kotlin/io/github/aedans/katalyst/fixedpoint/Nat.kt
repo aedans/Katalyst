@@ -27,9 +27,9 @@ fun fromGNatAlgebra() = Algebra<NatPattern, Eval<Int>> {
 }
 
 inline fun <reified T> Int.toGNat(CT: Corecursive<T>): GNat<T> = CT.run {
-    ana(toGNatCoalgebra(), Option.functor())
+    ana(Option.functor(), toGNatCoalgebra())
 }
 
 inline fun <reified T> GNat<T>.toInt(RT: Recursive<T>): Int = RT.run {
-    cata(fromGNatAlgebra(), Option.functor())
+    cata(Option.functor(), fromGNatAlgebra())
 }

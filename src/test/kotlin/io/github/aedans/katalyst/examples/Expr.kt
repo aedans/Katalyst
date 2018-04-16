@@ -53,7 +53,7 @@ fun evalExprAlgebra() = Algebra<ForExprPattern, Eval<Int>> {
 fun main(args: Array<String>) {
     val expr = plus(plus(int(1), int(2)), neg(plus(int(3), int(4))))
     Fix.recursive().run {
-        expr.cata(evalExprAlgebra(), ExprPattern.functor()) // -4
+        expr.cata(ExprPattern.functor(), evalExprAlgebra()) // -4
     }
 }
 
@@ -65,7 +65,7 @@ class ExprTest : UnitSpec() {
 
         "expr.cata(alg = evalExprAlgebra()) should be -4" {
             Fix.recursive().run {
-                expr.cata(evalExprAlgebra(), ExprPattern.functor())
+                expr.cata(ExprPattern.functor(), evalExprAlgebra())
             } shouldEqual -4
         }
     }

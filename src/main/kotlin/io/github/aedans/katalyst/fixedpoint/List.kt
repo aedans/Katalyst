@@ -42,9 +42,9 @@ fun <A> fromGListAlgebra() = Algebra<ListPattern<A>, Eval<List<A>>> {
 }
 
 inline fun <reified T, A> List<A>.toGList(CT: Corecursive<T>): GList<T, A> = CT.run {
-    ana(toGListCoalgebra(), ComposedFunctor(Option.functor(), Tuple2.functor<A>()))
+    ana(ComposedFunctor(Option.functor(), Tuple2.functor<A>()), toGListCoalgebra())
 }
 
 inline fun <reified T, A> GList<T, A>.toCofree(RT: Recursive<T>): List<A> = RT.run {
-    cata(fromGListAlgebra(), ComposedFunctor(Option.functor(), Tuple2.functor<A>()))
+    cata(ComposedFunctor(Option.functor(), Tuple2.functor<A>()), fromGListAlgebra())
 }

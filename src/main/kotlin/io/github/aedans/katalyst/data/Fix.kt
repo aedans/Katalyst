@@ -16,11 +16,11 @@ data class Fix<out A>(val unfix: Kind<A, Eval<FixOf<A>>>) : FixOf<A> {
 
 @instance(Fix::class)
 interface FixBirecursiveInstance : Birecursive<ForFix> {
-    override fun <F> projectT(t: FixOf<F>, FF: Functor<F>) = FF.run {
+    override fun <F> projectT(FF: Functor<F>, t: FixOf<F>) = FF.run {
         t.fix().unfix.map { it.value() }
     }
 
-    override fun <F> embedT(t: Kind<F, Eval<FixOf<F>>>, FF: Functor<F>) =
+    override fun <F> embedT(FF: Functor<F>, t: Kind<F, Eval<FixOf<F>>>) =
             Eval.later { Fix(t) }
 }
 
