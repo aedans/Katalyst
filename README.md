@@ -1,6 +1,8 @@
 Katalyst
 ========
 
+Notice: Katalyst has been merged arrow to create arrow-recursion.
+
 [![Download](https://api.bintray.com/packages/aedans/maven/katalyst/images/download.svg)](https://bintray.com/aedans/maven/katalyst/_latestVersion)
 
 [Kotlin](http://kotlinlang.org) recursion schemes with [Arrow](https://github.com/arrow-kt/arrow).
