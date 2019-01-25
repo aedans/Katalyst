@@ -1,7 +1,7 @@
 Katalyst
 ========
 
-Notice: Katalyst has been merged arrow to create arrow-recursion.
+**Notice: Katalyst has been merged with Arrow to create arrow-recursion and is no longer being maintained. See [The Arrow Website](https://arrow-kt.io/) and [The Arrow Recursion Docs](https://arrow-kt.io/docs/recursion/intro/) instead.**
 
 [![Download](https://api.bintray.com/packages/aedans/maven/katalyst/images/download.svg)](https://bintray.com/aedans/maven/katalyst/_latestVersion)
 
